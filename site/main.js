@@ -415,7 +415,7 @@ async function boot() {
       body.replaceChildren();
       cases.forEach(c => {
         const tr = document.createElement('tr');
-        const cells = [c.scenario, c.v0_pass ? '통과' : '미통과', c.v1_pass ? '통과' : '미통과', c.diagnosis];
+        const cells = [c.scenario, c.v0_pass ? '통과' : '미통과', c.v1_pass ? '통과' : '미통과'];
         cells.forEach((value, idx) => {
           const td = element('td', idx === 1 ? (c.v0_pass ? 'pass' : 'fail') : idx === 2 ? (c.v1_pass ? 'pass' : 'fail') : '', value);
           tr.appendChild(td);

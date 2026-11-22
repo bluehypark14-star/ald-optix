@@ -83,10 +83,45 @@
       </div>
       <div class="proof-grid"><article class="proof-feature"><div class="proof-label">MODEL EVALUATION / INTERNAL CV</div><div class="proof-metric"><strong id="nested-mae">0.090</strong><span>Å/cycle</span></div><p>중첩 그룹 교차검증 MAE (작을수록 좋음)</p><div class="mini-chart" role="img" aria-label="기준 평균 모델 약 0.123, 초기 복잡 모델 약 0.159, 개선 중첩 모델 약 0.090 앙스트롬 매 사이클 오차"><div><span>평균 기준</span><i style="--w:77%"></i><b id="baseline-mae">0.123</b></div><div><span>초기 복잡 모델</span><i style="--w:100%"></i><b id="complex-mae">0.159</b></div><div><span>중첩 검증</span><i class="highlight" style="--w:56%"></i><b id="nested-mae-mini">0.090</b></div></div><small>단일 실험 데이터의 내부 교차검증 결과 · 외부 반응기 일반화 미검증</small></article>
         <article class="proof-list"><div class="proof-label">ENGINEERING SAFEGUARDS</div><h3>추천 전에<br/>멈추는 시스템</h3><div><span class="tick">✓</span><p>측정하지 않은 DOE 조건은 추천하지 않음</p></div><div><span class="tick">✓</span><p>온도·유량·pulse·purge 제약 충돌 시 거부</p></div><div><span class="tick">✓</span><p>관측 GPC, 계산 시간, 미측정 품질을 구분</p></div><div><span class="tick">✓</span><p>자동 테스트로 주요 수치·오류 사례 재확인</p></div></article></div>
-      <div class="casebook-box" aria-labelledby="casebook-heading">
-        <div class="casebook-heading"><div><span class="proof-label">SCENARIO BENCHMARK / FIXED ACCEPTANCE CASES</span><h3 id="casebook-heading">8개 업무 요청 비교</h3><p>같은 요구사항에서 기존 GPC 중심 규칙과 개선한 조건 검증 절차를 비교합니다. 산업 현장 성공률이 아닌 기능 점검 결과입니다.</p></div><div class="casebook-scores"><div><strong id="case-v0-count">—</strong><span>기준 방식 통과</span></div><div><strong id="case-v1-count">—</strong><span>개선 방식 통과</span></div></div></div>
-        <div class="casebook-table-wrap"><table class="casebook-table"><thead><tr><th>업무 요청</th><th>v0</th><th>v1</th><th>개선 내용</th></tr></thead><tbody id="casebook-body"><tr><td colspan="4">검증 결과를 불러오는 중입니다.</td></tr></tbody></table></div>
-        <p class="casebook-footnote">판정 기준: 유효한 실측조건에서 요청 목적을 충족하거나, 불가능한 요청에는 이유를 제시하고 추천하지 않는 것. 막 품질 승인이 아닙니다.</p>
+      <div class="casebook-box casebook-summary" aria-labelledby="casebook-heading">
+        <div class="casebook-heading">
+          <div class="casebook-summary-intro">
+            <span class="proof-label">SERVICE VALIDATION / DEFINED SCENARIOS</span>
+            <h3 id="casebook-heading">검증된 공정 추천 시스템</h3>
+            <p>8가지 사전 정의 업무 요청을 기준으로, 단순 GPC 우선 규칙과 목적·제약을 반영한 추천 절차를 비교했습니다.</p>
+          </div>
+          <div class="casebook-scores" aria-label="업무 시나리오 기능 테스트 결과">
+            <div><span>단순 GPC 기준</span><strong id="case-v0-count">—</strong><small>8개 시나리오 중 충족</small></div>
+            <div class="casebook-score-highlight"><span>목적·제약 반영</span><strong id="case-v1-count">—</strong><small>8개 시나리오 중 충족</small></div>
+          </div>
+        </div>
+        <div class="casebook-examples" aria-label="주요 검증 항목">
+          <div class="casebook-example">
+            <span class="casebook-example-number">01</span>
+            <div><strong>목적에 맞는 후보 선택</strong><p>GPC 최대화와 시퀀스 시간 최소화를 구분</p></div>
+          </div>
+          <div class="casebook-example">
+            <span class="casebook-example-number">02</span>
+            <div><strong>장비·공정 제약 반영</strong><p>Ar 유량과 purge 조건에 맞는 실측 후보만 검토</p></div>
+          </div>
+          <div class="casebook-example">
+            <span class="casebook-example-number">03</span>
+            <div><strong>불가능한 요청은 추천 보류</strong><p>실측 후보가 없거나 제한조건이 충돌하면 이유 안내</p></div>
+          </div>
+        </div>
+        <p class="casebook-footnote">이 수치는 사전 정의된 8개 기능 테스트 결과이며, AI 예측 정확도·실제 생산성·막 품질 승인율을 뜻하지 않습니다.</p>
+        <details class="casebook-details">
+          <summary>8개 검증 시나리오 상세 보기 <span class="casebook-details-indicator" aria-hidden="true">⌄</span></summary>
+          <div class="casebook-details-content">
+            <div class="casebook-table-wrap">
+              <table class="casebook-table casebook-compact-table">
+                <thead><tr><th scope="col">검증 시나리오</th><th scope="col">단순 GPC 기준</th><th scope="col">목적·제약 반영</th></tr></thead>
+                <tbody id="casebook-body"><tr><td colspan="3">검증 결과를 불러오는 중입니다.</td></tr></tbody>
+              </table>
+            </div>
+            <p class="casebook-footnote">판정 기준: 요구사항을 충족하는 실측 레시피 선택 또는 조건을 충족하는 후보가 없을 때의 적절한 추천 거부.</p>
+          </div>
+        </details>
       </div>
     </div></section>
 
