@@ -97,3 +97,82 @@
 @media(max-width:1000px){.lab-card{grid-template-columns:1fr}.lab-output{min-height:0}.output-body{padding-bottom:15px}.candidate-heading{align-items:start;flex-direction:column}.studio-table-footnote{flex-direction:column;gap:5px}}
 @media(max-width:530px){.lab-control,.lab-output{padding:23px 17px}.studio-input-grid{gap:10px 7px}.studio-input-grid label{font-size:11px}.studio-input-grid label span{font-size:9px}.studio-input-grid select,.studio-input-grid input{font-size:11px;padding:0 7px}.studio-actions .btn{padding:0 11px;font-size:12px}.studio-context{padding:12px 13px;align-items:start}.candidate-panel{padding:21px 13px}.candidate-heading h3{font-size:22px}.candidate-controls{width:100%}.candidate-controls button{flex:1;padding:9px 10px}.output-metrics{gap:6px}.output-metrics strong{font-size:18px}}
 @media(max-width:360px){.studio-input-grid{grid-template-columns:1fr}.lab-control{padding:22px 16px}}
+
+/* V2: measured-data explorer (no remote charting libraries). */
+.analysis-panel{margin-top:22px;padding:30px;background:#fff;border:1px solid #d3e2d5;border-radius:15px;box-shadow:0 15px 32px #12452c0b}
+.analysis-panel[hidden]{display:none!important}
+.analysis-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:19px}
+.analysis-heading h3{font-size:26px;letter-spacing:-.055em;margin:8px 0 4px}
+.analysis-heading p{font-size:13px;color:#728477;margin:0;line-height:1.7}
+.analysis-verified{border:1px solid #c6dfc9;background:#eef7ec;border-radius:999px;color:#216443;padding:8px 14px;font-weight:800;font-size:11px;white-space:nowrap}
+.analysis-quickstats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;margin:20px 0}
+.analysis-stat{background:#f2f8f1;border:1px solid #deebdc;border-radius:10px;padding:13px 17px}
+.analysis-stat strong{display:block;font-size:23px;color:#155d3e;letter-spacing:-.045em;font-variant-numeric:tabular-nums}
+.analysis-stat span{font-size:11px;color:#65806e;line-height:1.55}
+.analysis-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}
+.analysis-chart-card{margin:0;min-width:0;background:#fbfdfb;border:1px solid #e0ebe0;border-radius:12px;padding:22px 20px}
+.analysis-chart-header{display:flex;align-items:start;justify-content:space-between;gap:10px;min-height:59px}
+.analysis-chart-header h4,.analysis-comparison h4{font-size:17px;margin:0 0 5px;letter-spacing:-.035em}
+.analysis-chart-header p{font-size:11px;color:#718477;line-height:1.6;margin:0}
+.chart-legend{display:flex;gap:13px;flex-wrap:wrap;margin:14px 0 3px}
+.chart-legend span{display:flex;align-items:center;gap:5px;font-size:11px;color:#577363}
+.chart-legend i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.legend-recommended{background:#14764d}.legend-frontier{background:#db9c3b}.legend-other{background:#9cb4a6}
+.chart-viewport{width:100%;min-width:0;margin-top:2px}
+.chart-viewport svg{width:100%;height:auto;display:block;overflow:visible}
+.chart-viewport svg text{font-family:inherit}
+.analysis-chart-card figcaption{font-size:11px;line-height:1.7;color:#6f8678;margin-top:11px}
+.factor-picker{font-size:10px;color:#416a52;white-space:nowrap;font-weight:750}
+.factor-picker select{display:block;width:110px;min-height:34px;margin-top:5px;border-radius:7px;border:1px solid #c8dbcc;background:#fff;color:#184b33;padding:0 8px;font-size:12px}
+.factor-chart{display:flex;flex-direction:column;gap:23px;min-height:195px;justify-content:center;padding:16px 0 0}
+.factor-bar-meta{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.factor-bar-meta strong{font-size:13px;color:#244c38}
+.factor-bar-meta span{font-size:11px;color:#557968;text-align:right;font-variant-numeric:tabular-nums}
+.factor-track{background:#e5eee5;height:16px;border-radius:999px;overflow:hidden}
+.factor-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#84cba0,#176f4b);min-width:2px}
+.analysis-comparison{margin-top:18px;padding:23px;border:1px solid #deebdf;border-radius:11px}
+.analysis-comparison h4{margin-bottom:13px}
+.analysis-compare-wrap{overflow:auto}
+.analysis-compare-table{width:100%;border-collapse:collapse;min-width:570px;text-align:left;font-size:12px}
+.analysis-compare-table th,.analysis-compare-table td{padding:11px 12px;border-bottom:1px solid #e4ebe5;vertical-align:top}
+.analysis-compare-table thead{background:#eef6ee;color:#285e40}
+.analysis-compare-table th:first-child{white-space:nowrap;width:23%}
+.analysis-compare-table td:nth-child(2){font-weight:800;color:#185d3d}
+.analysis-compare-note,.analysis-footnote{font-size:11px;color:#728678;line-height:1.8;margin:13px 0 0}
+.analysis-footnote{padding:0 3px}
+@media(max-width:1050px){.analysis-grid{grid-template-columns:1fr}}
+@media(max-width:620px){.analysis-panel{padding:20px 14px}.analysis-heading{align-items:start;flex-direction:column}.analysis-heading h3{font-size:23px}.analysis-quickstats{grid-template-columns:1fr 1fr}.analysis-quickstats .analysis-stat:last-child{grid-column:1/-1}.analysis-chart-card{padding:17px 12px}.analysis-chart-header{flex-direction:column}.analysis-chart-header .factor-picker{display:flex;align-items:center;gap:9px}.factor-picker select{margin-top:0}.analysis-comparison{padding:16px 12px}}
+
+
+/* Final submission: compact service validation, technical evidence on demand. */
+.casebook-summary{padding:30px 32px}
+.casebook-summary .casebook-heading{align-items:center;margin-bottom:22px;gap:26px}
+.casebook-summary-intro{max-width:575px}
+.casebook-summary-intro h3{font-size:27px;line-height:1.32;letter-spacing:-.055em;margin:9px 0 10px}
+.casebook-summary-intro p{font-size:13px;line-height:1.85;max-width:565px;margin:0;color:#5c7769;word-break:keep-all}
+.casebook-summary .casebook-scores{gap:10px}
+.casebook-summary .casebook-scores>div{min-width:154px;background:#f6f9f5;border:1px solid #e0e9df;padding:17px 18px;border-radius:11px}
+.casebook-summary .casebook-scores>div.casebook-score-highlight{background:#eaf5e8;border-color:#c8e2ce}
+.casebook-summary .casebook-scores span{display:block;color:#4d6e5c;font-size:11px;font-weight:800;margin-bottom:5px}
+.casebook-summary .casebook-scores strong{font-size:33px;letter-spacing:-.06em;font-variant-numeric:tabular-nums;line-height:1.17;color:#3c6350}
+.casebook-summary .casebook-scores .casebook-score-highlight strong{color:#136640}
+.casebook-summary .casebook-scores small{display:block;margin-top:6px;font-size:10px;color:#7c8d80}
+.casebook-examples{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.casebook-example{display:flex;gap:12px;background:#f8faf7;border:1px solid #e4ece2;border-radius:11px;padding:18px 16px;min-width:0}
+.casebook-example-number{color:#2b8a60;font-size:11px;letter-spacing:.08em;font-weight:900;flex:0 0 auto;padding-top:2px}
+.casebook-example strong{display:block;color:#1f4833;font-size:13px;line-height:1.5;letter-spacing:-.02em}
+.casebook-example p{margin:6px 0 0;font-size:11px;line-height:1.75;color:#70877a;word-break:keep-all}
+.casebook-summary>.casebook-footnote{margin:15px 0 0;font-size:11px;line-height:1.7}
+.casebook-details{margin-top:16px;border-top:1px solid #e2ebe2}
+.casebook-details summary{display:flex;justify-content:space-between;gap:12px;align-items:center;cursor:pointer;list-style:none;padding:17px 4px 1px;color:#235a3e;font-size:12px;font-weight:800}
+.casebook-details summary::-webkit-details-marker{display:none}
+.casebook-details summary:focus-visible{outline:2px solid #348356;outline-offset:5px;border-radius:3px}
+.casebook-details-indicator{display:inline-block;font-size:21px;line-height:1;transition:transform .2s ease}
+.casebook-details[open] .casebook-details-indicator{transform:rotate(180deg)}
+.casebook-details-content{padding-top:15px}
+.casebook-compact-table{min-width:480px;font-size:12px}
+.casebook-compact-table th,.casebook-compact-table td{padding:12px 15px}
+.casebook-compact-table th:nth-child(2),.casebook-compact-table th:nth-child(3){width:155px}
+@media(max-width:990px){.casebook-summary .casebook-heading{align-items:stretch;flex-direction:column}.casebook-summary .casebook-scores{width:100%}.casebook-summary .casebook-scores>div{flex:1}}
+@media(max-width:700px){.casebook-summary{padding:23px 20px}.casebook-examples{grid-template-columns:1fr}.casebook-example{padding:14px 16px}.casebook-summary-intro h3{font-size:24px}}
+@media(max-width:390px){.casebook-summary{padding:20px 14px}.casebook-summary .casebook-scores>div{min-width:0;padding:13px 10px}.casebook-summary .casebook-scores strong{font-size:28px}.casebook-summary .casebook-scores span{font-size:10px}}

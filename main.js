@@ -110,6 +110,12 @@ function chooseRecipe(payload, req) {
   if (normalized.targetNm < 0.1 || normalized.targetNm > 1000) {
     return {error: '목표 두께는 0.1~1000 nm 범위에서 입력해 주세요.'};
   }
+  if (normalized.minTemp < 0 || normalized.maxTemp > 1000 ||
+      normalized.maxTemp < 0 || normalized.minTemp > 1000 ||
+      normalized.minPurge < 0 || normalized.maxPurge < 0 ||
+      normalized.minPurge > 3600 || normalized.maxPurge > 3600) {
+    return {error: '온도는 0~1000°C, purge는 0~3600초 범위로 입력해 주세요.'};
+  }
   if (normalized.minTemp > normalized.maxTemp || normalized.minPurge > normalized.maxPurge) {
     return {error: '제약조건의 상한과 하한이 충돌합니다. 범위를 수정해 주세요.'};
   }
@@ -220,6 +226,162 @@ function displayCandidates(result) {
   panel.hidden=false;
   updateCandidateRows();
 }
+// Charts use only verified, observed recipes passed through chooseRecipe.
+// No new process settings or GPC values are inferred by these visualizations.
+const SVG_NS = 'http://www.w3.org/2000/svg';
+const FACTORS = Object.freeze({
+  temperature_C: ['온도', '°C'], flow_sccm: ['Ar 유량', 'sccm'],
+  pulse_ms: ['Pulse', 'ms'], purge_s: ['Purge', 's']
+});
+function svgNode(tag, attrs = {}, textValue) {
+  const node = document.createElementNS(SVG_NS, tag);
+  for (const [name, value] of Object.entries(attrs)) node.setAttribute(name, String(value));
+  if (textValue !== undefined) node.textContent = String(textValue);
+  return node;
+}
+function asMinutes(r) { return r.sequence_time_s / 60; }
+function isDominated(recipe, all) {
+  return all.some(other => other !== recipe &&
+    other.sequence_time_s <= recipe.sequence_time_s &&
+    other.gpc_mean_A >= recipe.gpc_mean_A &&
+    (other.sequence_time_s < recipe.sequence_time_s || other.gpc_mean_A > recipe.gpc_mean_A));
+}
+function chartText(x, y, textValue, extra = {}) {
+  return svgNode('text', {x, y, 'font-size': '13', fill:'#587062', ...extra}, textValue);
+}
+function drawTradeoff(result) {
+  const graph = $('#tradeoff-chart');
+  graph.replaceChildren();
+  const all = result.ranked;
+  const plot = {left:74, top:25, width:525, height:244};
+  const mins = all.map(asMinutes), gpcs = all.map(r => r.gpc_mean_A);
+  const rawXMin = Math.min(...mins), rawXMax = Math.max(...mins);
+  const rawYMin = Math.min(...gpcs), rawYMax = Math.max(...gpcs);
+  const xPad = Math.max((rawXMax - rawXMin) * 0.12, 1);
+  const yPad = Math.max((rawYMax - rawYMin) * 0.15, 0.025);
+  const xMin = Math.max(0, rawXMin - xPad), xMax = rawXMax + xPad;
+  const yMin = Math.max(0, rawYMin - yPad), yMax = rawYMax + yPad;
+  const xPos = value => plot.left + (value - xMin) / (xMax - xMin) * plot.width;
+  const yPos = value => plot.top + (yMax - value) / (yMax - yMin) * plot.height;
+  graph.append(svgNode('rect',{x:plot.left,y:plot.top,width:plot.width,height:plot.height,rx:8,fill:'#f8fbf7'}));
+  for (let i = 0; i <= 4; i++) {
+    const x = plot.left + plot.width * i / 4, y = plot.top + plot.height * i / 4;
+    graph.append(svgNode('line',{x1:x,x2:x,y1:plot.top,y2:plot.top+plot.height,stroke:'#e5eee6','stroke-width':1}));
+    graph.append(svgNode('line',{x1:plot.left,x2:plot.left+plot.width,y1:y,y2:y,stroke:'#e5eee6','stroke-width':1}));
+    graph.append(chartText(x,plot.top+plot.height+23,(xMin+(xMax-xMin)*i/4).toFixed(1),{'text-anchor':'middle'}));
+    graph.append(chartText(plot.left-11,y+4,(yMax-(yMax-yMin)*i/4).toFixed(3),{'text-anchor':'end'}));
+  }
+  graph.append(chartText(plot.left+plot.width/2,334,'가정 시퀀스 시간 (분)',{'text-anchor':'middle','font-size':14,'font-weight':650}));
+  graph.append(chartText(18,plot.top+plot.height/2,'GPC (Å/cycle)',{'text-anchor':'middle',transform:`rotate(-90 18 ${plot.top+plot.height/2})`,'font-size':13,'font-weight':650}));
+  const frontier = all.filter(r=>!isDominated(r,all));
+  // Plot rejected candidates first so that the recommended marker remains visible.
+  const order = [...all.slice(1),all[0]];
+  order.forEach(r => {
+    const best = r===all[0], pareto = !isDominated(r,all);
+    const color = best ? '#14764d' : pareto ? '#db9c3b' : '#9cb4a6';
+    const circle = svgNode('circle',{
+      cx:xPos(asMinutes(r)),cy:yPos(r.gpc_mean_A),r: best ? 9 : 6.5,
+      fill:color, stroke:'#fff','stroke-width':best ? 3 : 1.8,
+      opacity:best ? 1 : .90
+    });
+    circle.append(svgNode('title',{},`${best?'추천 · ':''}${r.temperature_C}°C · Ar ${r.flow_sccm} · pulse ${r.pulse_ms} ms · purge ${r.purge_s} s · GPC ${r.gpc_mean_A.toFixed(3)} Å/cycle · ${asMinutes(r).toFixed(2)}분`));
+    graph.append(circle);
+    if (best) graph.append(chartText(Math.min(595,xPos(asMinutes(r))+11),Math.max(15,yPos(r.gpc_mean_A)-12),'추천',{'font-size':12,'font-weight':800,fill:'#116643'}));
+  });
+  $('#tradeoff-summary').textContent = `검토 후보 ${all.length}개 중 Pareto 비지배 후보 ${frontier.length}개. 추천 조건은 ${result.request.objective==='gpc'?'최대 GPC':result.request.objective==='time'?'최단 시간':'설정된 균형 점수'} 기준이며, 막 품질 검증을 뜻하지 않습니다.`;
+}
+function drawFactorBars(result) {
+  const key = $('#factor-select').value;
+  const [name, unit] = FACTORS[key] || FACTORS.temperature_C;
+  const box = $('#factor-chart');
+  box.replaceChildren();
+  const groups = new Map();
+  result.ranked.forEach(r => {
+    const level = r[key];
+    const prev = groups.get(level) || {sum:0,count:0};
+    prev.sum += r.gpc_mean_A;
+    prev.count++;
+    groups.set(level,prev);
+  });
+  const levels = [...groups.keys()].sort((a,b)=>a-b);
+  const values = levels.map(level => groups.get(level).sum / groups.get(level).count);
+  const maxValue = Math.max(...values,0.01);
+  levels.forEach((level,i) => {
+    const avg = values[i], count = groups.get(level).count;
+    const row = element('div','factor-bar-row');
+    const label = element('div','factor-bar-meta');
+    label.append(element('strong','',`${level} ${unit}`),element('span','',`${avg.toFixed(3)} Å/cycle · 후보 ${count}개`));
+    const track = element('div','factor-track');
+    const fill = element('div','factor-fill');
+    fill.style.width = `${100 * avg / maxValue}%`;
+    fill.setAttribute('role','img');
+    fill.setAttribute('aria-label',`${name} ${level} ${unit}의 후보 평균 GPC ${avg.toFixed(3)} Å/cycle`);
+    track.append(fill);
+    row.append(label,track);
+    box.append(row);
+  });
+  $('#factor-summary').textContent = `${name} 수준 ${levels.length}개, 실측 후보 ${result.ranked.length}개를 사용한 단순 그룹 평균입니다. 다른 공정 인자가 섞여 있을 수 있으므로 독립적인 인과효과나 미측정 레시피의 예측값으로 해석하지 마세요.`;
+}
+function drawComparison(result) {
+  const summary = $('#analysis-quickstats');
+  const comparison = $('#analysis-comparison');
+  summary.replaceChildren();comparison.replaceChildren();
+  const all = result.ranked, best = all[0];
+  const frontierCount = all.filter(r=>!isDominated(r,all)).length;
+  const cards = [
+    [String(all.length),'통과한 실측 조건'],
+    [String(frontierCount),'Pareto 비지배 조건'],
+    [`${(best.cycles * best.gpc_mean_A / 10).toFixed(2)} nm`,'추천 조건의 계산상 최종 두께']
+  ];
+  cards.forEach(([value,label]) => {
+    const card=element('div','analysis-stat');
+    card.append(element('strong','',value),element('span','',label));
+    summary.append(card);
+  });
+  const title = element('h4','', '상위 후보 성능 비교');
+  comparison.append(title);
+  if (all.length < 2) {
+    comparison.append(element('p','', '현재 제약을 만족하는 실측 후보가 하나뿐이므로 차순위 후보와 비교할 수 없습니다.'));
+    return;
+  }
+  const second = all[1];
+  const table=element('table','analysis-compare-table');
+  const thead=element('thead');
+  const thr=element('tr');
+  ['지표','추천 1위','2위 후보'].forEach(t=>thr.append(element('th','',t)));
+  thead.append(thr);table.append(thead);
+  const tbody=element('tbody');
+  const rows = [
+    ['공정 조건',`${best.temperature_C}°C · Ar ${best.flow_sccm} · ${best.pulse_ms}ms / ${best.purge_s}s`,`${second.temperature_C}°C · Ar ${second.flow_sccm} · ${second.pulse_ms}ms / ${second.purge_s}s`],
+    ['평균 GPC',`${best.gpc_mean_A.toFixed(3)} Å/cycle`,`${second.gpc_mean_A.toFixed(3)} Å/cycle`],
+    ['목표 두께 cycles',`${best.cycles}회`,`${second.cycles}회`],
+    ['가정 시퀀스 시간',`${asMinutes(best).toFixed(2)}분`,`${asMinutes(second).toFixed(2)}분`]
+  ];
+  rows.forEach((values,i)=>{
+    const tr=element('tr');
+    values.forEach((t,j)=>tr.append(element(j===0?'th':'td','',t)));
+    tbody.append(tr);
+  });
+  table.append(tbody);
+  const wrap=element('div','analysis-compare-wrap');wrap.append(table);comparison.append(wrap);
+  comparison.append(element('p','analysis-compare-note','순위는 현재 목적함수에 따른 것이므로 2위가 모든 지표에서 열세라는 뜻은 아닙니다. GPC와 시간의 우열을 별도로 확인하세요.'));
+}
+function displayAnalysis(result) {
+  const panel=$('#analysis-panel');
+  if (result.error) {
+    panel.hidden=true;
+    $('#tradeoff-chart').replaceChildren();
+    $('#factor-chart').replaceChildren();
+    $('#analysis-quickstats').replaceChildren();
+    $('#analysis-comparison').replaceChildren();
+    return;
+  }
+  panel.hidden=false;
+  drawTradeoff(result);
+  drawFactorBars(result);
+  drawComparison(result);
+}
+
 function downloadCandidatesCsv() {
   if (!currentRanked.length) return;
   const headings=['rank','temperature_C','flow_sccm','pulse_ms','purge_s','gpc_mean_A_per_cycle','gpc_sd_A_per_cycle','replications','cycles','sequence_time_min'];
@@ -253,7 +415,7 @@ async function boot() {
       body.replaceChildren();
       cases.forEach(c => {
         const tr = document.createElement('tr');
-        const cells = [c.scenario, c.v0_pass ? '통과' : '미통과', c.v1_pass ? '통과' : '미통과', c.diagnosis];
+        const cells = [c.scenario, c.v0_pass ? '통과' : '미통과', c.v1_pass ? '통과' : '미통과'];
         cells.forEach((value, idx) => {
           const td = element('td', idx === 1 ? (c.v0_pass ? 'pass' : 'fail') : idx === 2 ? (c.v1_pass ? 'pass' : 'fail') : '', value);
           tr.appendChild(td);
@@ -273,22 +435,30 @@ async function boot() {
     });
     function render(event) {
       if (event) event.preventDefault();
+      const numeric = (id) => {
+        const value = $(id).value.trim();
+        return value === '' ? NaN : Number(value);
+      };
       const req = {
-        targetNm: $('#target-nm').value === '' ? NaN : Number($('#target-nm').value),
-        minTemp:Number($('#min-temp').value),maxTemp:Number($('#max-temp').value),
+        targetNm:numeric('#target-nm'),
+        minTemp:numeric('#min-temp'),maxTemp:numeric('#max-temp'),
         flowChoice:$('#flow-choice').value === 'any' ? 'any' : Number($('#flow-choice').value),
         pulseChoice:$('#pulse-choice').value === 'any' ? 'any' : Number($('#pulse-choice').value),
-        minPurge:Number($('#min-purge').value),maxPurge:Number($('#max-purge').value),
+        minPurge:numeric('#min-purge'),maxPurge:numeric('#max-purge'),
         objective:$('#objective').value,
       };
       const result=chooseRecipe(payload,req);
       displayRecipe(result);
       displayCandidates(result);
+      displayAnalysis(result);
     }
     const form=$('#recipe-form');
     form.addEventListener('submit', render);
     form.addEventListener('change', render);
-    $('#target-nm').addEventListener('input', render);
+    ['#target-nm','#min-temp','#max-temp','#min-purge','#max-purge'].forEach(id=>$(id).addEventListener('input',render));
+    $('#factor-select').addEventListener('change',()=>{
+      if (currentRanked.length && lastRequest) drawFactorBars({ranked:currentRanked,request:lastRequest});
+    });
     $('#reset-recipe').addEventListener('click',()=>{form.reset();render();});
     $('#toggle-candidates').addEventListener('click',()=>{showAllCandidates=!showAllCandidates;updateCandidateRows();});
     $('#download-candidates').addEventListener('click',downloadCandidatesCsv);
@@ -297,6 +467,7 @@ async function boot() {
     $('#model-status').textContent = '데이터 오류';
     output.replaceChildren(element('p','lab-error','실측 데이터 로딩 또는 무결성 검사에 실패했습니다. 원시 CSV와 data.json의 일치 여부를 확인해 주세요.'));
     displayCandidates({error:'data error'});
+    displayAnalysis({error:'data error'});
     console.error('ALD-OPTIX dataset load error:',err);
   }
 }
