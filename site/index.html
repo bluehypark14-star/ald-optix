@@ -120,7 +120,7 @@
         <div class="studio-context"><span class="studio-context-icon" aria-hidden="true">◎</span><p><strong>16개 DOE 실측 조건 · 32회 관측 기록</strong><br/>온도 175/275°C · Ar 10/20 sccm · pulse 20/40 ms · purge 10/20 s. 조건 변경 시 브라우저가 자동으로 다시 계산합니다.</p></div>
         <div class="lab-card">
           <div class="lab-control">
-            <div class="lab-control-title"><span class="small-tag">LIVE / OBSERVED DATA ONLY</span><h3>ALD Process Studio</h3><p>8개 입력 · 공정 제약 검증 · 목적별 후보 비교</p></div>
+            <div class="lab-control-title"><span class="small-tag">LIVE / OBSERVED DATA ONLY</span><h3>ALD Process Studio</h3><p>8개 입력 · 자유 범위 제약 · 목적별 후보 비교</p></div>
             <form id="recipe-form">
               <div class="studio-group-title"><span>01</span> 증착 목표</div>
               <div class="studio-input-grid">
@@ -129,15 +129,15 @@
               </div>
               <div class="studio-group-title"><span>02</span> 실측 공정 제약 <small>제약이 없다면 전체 실측 수준 검색</small></div>
               <div class="studio-input-grid">
-                <label>최소 증착 온도 <span>°C</span><select id="min-temp"><option value="175" selected>175°C (기본)</option><option value="200">200°C 이상</option><option value="275">275°C 이상</option></select></label>
-                <label>최대 증착 온도 <span>°C</span><select id="max-temp"><option value="275" selected>275°C (전체)</option><option value="200">200°C 이하</option><option value="175">175°C 이하</option><option value="150">150°C 이하 (후보 없음)</option></select></label>
+                <label for="min-temp">최소 증착 온도 <span>°C</span><input id="min-temp" type="number" min="0" max="1000" step="1" value="175" inputmode="numeric" required aria-describedby="studio-input-hint" /></label>
+                <label for="max-temp">최대 증착 온도 <span>°C</span><input id="max-temp" type="number" min="0" max="1000" step="1" value="275" inputmode="numeric" required aria-describedby="studio-input-hint" /></label>
                 <label>Ar 유량 <span>sccm</span><select id="flow-choice"><option value="any" selected>제한 없음 (10·20)</option><option value="10">10 sccm만</option><option value="20">20 sccm만</option></select></label>
                 <label>전구체 pulse <span>ms / each</span><select id="pulse-choice"><option value="any" selected>제한 없음 (20·40)</option><option value="20">20 ms만</option><option value="40">40 ms만</option></select></label>
-                <label>최소 purge <span>s / each</span><select id="min-purge"><option value="10" selected>10 s 이상</option><option value="20">20 s 이상</option></select></label>
-                <label>최대 purge <span>s / each</span><select id="max-purge"><option value="20" selected>20 s 이하</option><option value="10">10 s 이하</option></select></label>
+                <label for="min-purge">최소 purge <span>s / each</span><input id="min-purge" type="number" min="0" max="3600" step="0.1" value="10" required /></label>
+                <label for="max-purge">최대 purge <span>s / each</span><input id="max-purge" type="number" min="0" max="3600" step="0.1" value="20" required /></label>
               </div>
               <div class="studio-actions"><button type="submit" class="btn btn-dark">조건 적용 · 후보 비교 <span aria-hidden="true">↗</span></button><button id="reset-recipe" type="button" class="studio-reset">초기화</button></div>
-              <p class="studio-form-note">입력값은 실측 범위의 후보를 선별하는 제약입니다. 범위 충돌 또는 실측 후보 없음은 추천 거부로 표시합니다.</p>
+              <p id="studio-input-hint" class="studio-form-note">온도 범위를 직접 입력할 수 있습니다. 단, 실측 온도는 175°C와 275°C뿐입니다. 예: 최소 225°C → 275°C 실측 후보만 검색합니다. 미측정 온도의 GPC를 생성하지 않습니다.</p><p class="studio-form-note">입력값은 실측 후보를 거르는 제약입니다. 범위 충돌 또는 후보 없음은 추천 거부로 표시합니다.</p>
             </form>
           </div>
           <div class="lab-output"><div class="output-top"><span>DECISION OUTPUT</span><span id="model-status" class="ready-pill">관측 기반 계산</span></div>
@@ -148,9 +148,31 @@
         <section class="candidate-panel" id="candidate-panel" aria-labelledby="candidate-heading" hidden>
           <div class="candidate-heading"><div><span class="small-tag">RANKED / OBSERVED CANDIDATES</span><h3 id="candidate-heading">실측 후보 비교표</h3><p id="candidate-intro">제약을 만족하는 후보를 선택한 목적함수 순서로 비교합니다.</p></div><div class="candidate-controls"><button type="button" id="toggle-candidates" class="studio-reset">전체 후보 보기</button><button type="button" id="download-candidates" class="studio-export">CSV 저장 ↓</button></div></div>
           <div class="candidate-table-wrap"><table class="candidate-table"><thead><tr><th>순위</th><th>온도</th><th>Ar</th><th>Pulse</th><th>Purge</th><th>GPC 평균 ± SD</th><th>Cycles</th><th>이론 시간</th></tr></thead><tbody id="candidate-rows"></tbody></table></div>
-          <div class="studio-table-footnote"><span>GPC 단위: Å/cycle, 반복 n=2, SD는 실측 표준편차. 시간은 두 번의 pulse와 두 번의 purge만 포함합니다.</span><span>순위는 막 품질·실제 생산 적합성 순위가 아닙니다.</span></div>
+          <div class="studio-table-footnote"><span>GPC: Å/cycle · 반복 n=2 · SD: 실측 표준편차. 계산 시간은 각 cycle의 pulse 2회와 purge 2회만 반영합니다.</span><span>추천 순위는 실제 막 품질·양산 적합성 순위가 아닙니다.</span></div>
         </section>
-        <div class="app-cta"><div><strong>더 깊은 AI 분석이 필요하다면?</strong><p>공정변수별 분석, GPC 회귀 모델 검증, 도구 실행 기록과 공정 보고서 다운로드는 상세 Streamlit 서비스에서 제공합니다.</p></div><a class="btn btn-accent" id="launch-app" href="#lab" aria-disabled="true">분석 앱 연결 전 <span aria-hidden="true">↗</span></a></div>
+        <section class="analysis-panel" id="analysis-panel" aria-labelledby="analysis-heading" hidden>
+          <div class="analysis-heading">
+            <div><span class="small-tag">DATA EXPLORER / OBSERVED CANDIDATES</span><h3 id="analysis-heading">공정 성능 분석</h3><p>선택된 제약을 통과한 실측 후보만 표시합니다. 데이터 변화에 따라 그래프도 자동으로 갱신됩니다.</p></div>
+            <span class="analysis-verified">실측값 + 명시적 계산</span>
+          </div>
+          <div class="analysis-quickstats" id="analysis-quickstats" aria-live="polite"></div>
+          <div class="analysis-grid">
+            <figure class="analysis-chart-card">
+              <div class="analysis-chart-header"><div><h4>GPC · 시퀀스 시간 Trade-off</h4><p>오른쪽일수록 시간이 길고, 위쪽일수록 GPC가 높습니다.</p></div></div>
+              <div class="chart-legend"><span><i class="legend-recommended"></i>추천 후보</span><span><i class="legend-frontier"></i>Pareto 후보</span><span><i class="legend-other"></i>그 외</span></div>
+              <div class="chart-viewport"><svg id="tradeoff-chart" viewBox="0 0 640 345" preserveAspectRatio="xMidYMid meet" role="img" aria-label="시퀀스 시간과 관측 GPC 산점도"></svg></div>
+              <figcaption id="tradeoff-summary">두 지표를 동시에 고려할 때 다른 후보에 의해 지배되지 않는 조건을 Pareto 후보로 표시합니다.</figcaption>
+            </figure>
+            <figure class="analysis-chart-card">
+              <div class="analysis-chart-header"><div><h4>공정 변수별 GPC 탐색</h4><p>제약을 통과한 후보를 인자 수준별로 묶어 평균을 표시합니다.</p></div><label class="factor-picker" for="factor-select">분석 인자<select id="factor-select" aria-label="GPC를 비교할 공정 변수"><option value="temperature_C">온도</option><option value="flow_sccm">Ar 유량</option><option value="pulse_ms">Pulse</option><option value="purge_s">Purge</option></select></label></div>
+              <div id="factor-chart" class="factor-chart"></div>
+              <figcaption id="factor-summary">수준별 값은 각각의 실측 후보 GPC 평균을 다시 산술평균한 탐색용 요약입니다. 다른 조건을 통제한 인과효과가 아닙니다.</figcaption>
+            </figure>
+          </div>
+          <div class="analysis-comparison" id="analysis-comparison" aria-live="polite"></div>
+          <p class="analysis-footnote">계산식: cycles = ⌈(목표 두께[nm] × 10) / 평균 GPC[Å/cycle]⌉, 시퀀스 시간 = cycles × (2 × pulse[ms]/1000 + 2 × purge[s]). 장비 지연·실제 막 품질·불순물·균일도는 미반영. 그래프는 예측 모델 출력이 아닙니다.</p>
+        </section>
+        <div class="app-cta"><div><strong>더 깊은 AI 분석이 필요하다면?</strong><p>브라우저는 실측 후보의 비교 그래프를 제공하며, Ridge 회귀 검증·도구 실행 기록·공정 보고서 기능은 별도 Streamlit 분석 앱에서 제공합니다.</p></div><a class="btn btn-accent" id="launch-app" href="#lab" aria-disabled="true">분석 앱 연결 전 <span aria-hidden="true">↗</span></a></div>
         <p class="app-connection-hint" id="app-hint">분석 앱의 공개 URL은 Streamlit 배포 후 연결됩니다. 현재 페이지의 계산은 독립적으로 동작합니다.</p>
       </div>
     </section>
