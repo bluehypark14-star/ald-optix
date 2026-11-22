@@ -293,6 +293,29 @@ def run_llm_agent(user_request: str | dict, api_key: str, model: str = "gpt-4.1-
 # Gemini API — real function calling, separately classified from the legacy OpenAI path.
 # Official python-genai SDK, no API key is ever included in this source file.
 GEMINI_DEFAULT_MODEL = "gemini-3.5-flash-lite"
+# Alternate, free-tier-capable model. Never change providers automatically:
+# the operator controls which model consumes their limited API quota.
+GEMINI_ALLOWED_MODELS = ("gemini-3.5-flash-lite", "gemini-3.1-flash-lite")
+
+
+def _safe_gemini_error_metadata(exc: Exception) -> dict:
+    """Expose only a numeric HTTP status, never raw provider or auth messages."""
+    metadata = {'error': type(exc).__name__}
+    for key in ('code', 'status_code', 'http_status'):
+        code = getattr(exc, key, None)
+        if isinstance(code, int) and not isinstance(code, bool) and 400 <= code <= 599:
+            metadata['http_status'] = code
+            break
+    code = metadata.get('http_status')
+    if code in (500, 502, 503, 504) or metadata['error'] == 'ServerError':
+        metadata['category'] = 'GEMINI_SERVER_ERROR'
+    elif code == 429:
+        metadata['category'] = 'QUOTA_OR_RATE_LIMIT'
+    elif code in (400, 401, 403, 404):
+        metadata['category'] = 'REQUEST_OR_ACCESS'
+    else:
+        metadata['category'] = 'UNCLASSIFIED_API_ERROR'
+    return metadata
 
 
 def run_gemini_agent(user_request: str | dict, api_key: str,
@@ -311,6 +334,10 @@ def run_gemini_agent(user_request: str | dict, api_key: str,
         api_responses_received=0)
     if error:
         return "⚠️ 검증 중단: " + error, trace
+    if model not in GEMINI_ALLOWED_MODELS:
+        trace.append({'tool': 'llm_config', 'input': {},
+                      'result': {'error': 'unsupported_model'}})
+        return '허용하지 않은 Gemini 모델입니다. 실행을 중단했습니다.', trace
     if not api_key and client is None:
         return 'Gemini API 키가 없어 실시간 도구 호출을 실행하지 않았습니다.', trace
     try:
@@ -360,10 +387,19 @@ def run_gemini_agent(user_request: str | dict, api_key: str,
             parts = model_content.parts
             trace[0]['result']['api_responses_received'] += 1
         except Exception as exc:
-            # Do NOT expose server credentials, provider messages, or raw user text.
-            trace.append({'tool': 'llm_transport', 'input': {'step': step},
-                          'result': {'error': type(exc).__name__}})
-            return 'Gemini 연결 또는 응답 형식 오류로 실행을 중단했습니다. 검증 보고서를 발행하지 않았습니다.', trace
+            # SDK already retries transient failures; no additional hidden API
+            # retries here. Keep code/status only, not response body or secrets.
+            meta = _safe_gemini_error_metadata(exc)
+            trace.append({'tool': 'llm_transport', 'input': {'step': step, 'model': model},
+                          'result': meta})
+            if meta['category'] == 'GEMINI_SERVER_ERROR':
+                return ('Gemini 서버 오류로 요청이 중단되었습니다. 입력값이나 공정 계산 오류로 '
+                        '단정할 수 없습니다. 잠시 후 한 번만 재시도하거나 대체 무료 모델을 '
+                        '선택해 확인해 주세요. 검증 보고서는 발행하지 않았습니다.'), trace
+            if meta['category'] == 'QUOTA_OR_RATE_LIMIT':
+                return ('Gemini 호출량·속도 제한 때문에 실행을 중단했습니다. 무료 한도를 '
+                        '확인해 주세요. 검증 보고서는 발행하지 않았습니다.'), trace
+            return 'Gemini API 요청 또는 응답 처리 실패. 검증 보고서는 발행하지 않았습니다.', trace
 
         calls = [p.function_call for p in parts if getattr(p, 'function_call', None) is not None]
         if len(calls) > 8 or total_calls + len(calls) > 16:

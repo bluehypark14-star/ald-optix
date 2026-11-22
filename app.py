@@ -19,7 +19,7 @@ from core import (
     cross_validate, nested_cross_validate, quality_gate, scenario_suite,
     build_report, EVIDENCE, SOURCE, DOI, sensitivity_analysis, engineering_casebook,
 )
-from agent import deterministic_demo, run_gemini_agent, validated_request, GEMINI_DEFAULT_MODEL
+from agent import deterministic_demo, run_gemini_agent, validated_request, GEMINI_DEFAULT_MODEL, GEMINI_ALLOWED_MODELS
 from ui_state import workflow_is_current
 from exports import make_recipe_review, trace_download_json, audit_execution
 
@@ -198,7 +198,11 @@ with t2:
     selected_mode=st.radio("방식",["규칙 기반 워크플로 (무료·기본)","Gemini LLM 도구 호출 (무료 등급·선택 사항)"],horizontal=True,label_visibility='collapsed')
     api_key=''
     llm_chosen=selected_mode.startswith('Gemini LLM')
+    gemini_model = GEMINI_DEFAULT_MODEL
     if llm_chosen:
+        gemini_model = st.selectbox(
+            'Gemini 모델 (오류 시에만 대체 모델 시험)', GEMINI_ALLOWED_MODELS,
+            index=0, help='무료 API 사용 가능 범위는 프로젝트별 한도에 따릅니다. 자동 재시도·모델 전환은 하지 않습니다.')
         st.warning("Gemini 무료 등급에서 지원하는 모델을 사용합니다. 프로젝트에 결제 계정을 연결하면 요금이 발생할 수 있습니다. 접근 코드 제한은 세션 기준이므로 전역 호출 제한을 대신하지 않습니다.")
         st.caption("보안을 위해 방문자의 API 키 입력은 받지 않습니다. 앱 운영자의 서버 비밀 설정과 시연 접근 코드가 필요합니다.")
         server_key=os.getenv('GEMINI_API_KEY','')
@@ -265,7 +269,10 @@ with t2:
     current_mode = 'Gemini function-calling' if llm_chosen else 'Deterministic tools'
     # A Streamlit rerun preserves session_state. Never display an earlier analysis
     # after the user edits ANY prompt character or switches execution mode.
-    if not workflow_is_current(st.session_state.get('last_workflow'), prompt, current_mode):
+    current_model = gemini_model if llm_chosen else None
+    previous = st.session_state.get('last_workflow')
+    if (not workflow_is_current(previous, prompt, current_mode)
+            or (previous is not None and previous.get('model') != current_model)):
         st.session_state.pop('last_workflow', None)
     parsed_preview,parse_error=validated_request(prompt)
     if parse_error:
@@ -279,10 +286,10 @@ with t2:
             try:
                 if llm_chosen:
                     st.session_state['llm_live_calls']=st.session_state.get('llm_live_calls',0)+1
-                response, trace=run_gemini_agent(prompt,api_key,model=GEMINI_DEFAULT_MODEL) if llm_chosen else deterministic_demo(prompt)
+                response, trace=run_gemini_agent(prompt,api_key,model=gemini_model) if llm_chosen else deterministic_demo(prompt)
                 st.session_state['last_workflow']={
                     'response':response, 'trace':trace,
-                    'mode':current_mode, 'request':prompt,
+                    'mode':current_mode, 'request':prompt, 'model':current_model,
                 }
             except Exception as exc:
                 st.error(f"분석 실행 실패: {type(exc).__name__}. API 사용 권한/네트워크/호출 제한을 확인해 주세요.")
