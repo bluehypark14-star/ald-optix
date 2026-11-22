@@ -85,50 +85,79 @@ const cyclesFor = (nm, gpcA) => Math.ceil(nm * 10 / gpcA);
 const sequenceSeconds = (r, cycles) => cycles * (2 * r.pulse_ms / 1000 + 2 * r.purge_s);
 
 function chooseRecipe(payload, req) {
-  // An invalid static payload must never produce a plausible-looking recipe.
+  // Reject corrupted experiments before using any values.
   if (!validatedMeasuredData(payload)) {
     return {error: '실측 데이터 무결성 검증에 실패했습니다. 추천을 중단합니다.'};
   }
-  if (!req || !Number.isFinite(req.targetNm) ||
-      !Number.isFinite(req.maxTemp) || !Number.isFinite(req.minPurge) ||
-      !['time','gpc','balanced'].includes(req.objective)) {
-    return {error: '유효한 두께, 온도, purge 및 최적화 목표를 지정해 주세요.'};
+  if (!req || typeof req !== 'object') return {error: '공정 조건을 입력해 주세요.'};
+  // Backward-compatible defaults for the public regression comparison harness.
+  const normalized = {
+    targetNm: req.targetNm, objective: req.objective,
+    minTemp: req.minTemp === undefined ? 175 : req.minTemp,
+    maxTemp: req.maxTemp,
+    flowChoice: req.flowChoice === undefined ? 'any' : req.flowChoice,
+    pulseChoice: req.pulseChoice === undefined ? 'any' : req.pulseChoice,
+    minPurge: req.minPurge,
+    maxPurge: req.maxPurge === undefined ? 20 : req.maxPurge,
+  };
+  if (!['targetNm','minTemp','maxTemp','minPurge','maxPurge'].every(k =>
+        typeof normalized[k] === 'number' && Number.isFinite(normalized[k])) ||
+      !['time','gpc','balanced'].includes(normalized.objective) ||
+      !['any',10,20].includes(normalized.flowChoice) ||
+      !['any',20,40].includes(normalized.pulseChoice)) {
+    return {error: '목표 두께와 공정 제약을 올바르게 지정해 주세요.'};
   }
-  const all = payload.recipes;
-  if (!Number.isFinite(req.targetNm) || req.targetNm < 0.1 || req.targetNm > 1000) {
+  if (normalized.targetNm < 0.1 || normalized.targetNm > 1000) {
     return {error: '목표 두께는 0.1~1000 nm 범위에서 입력해 주세요.'};
   }
-  const filtered = all.filter(r => r.temperature_C <= req.maxTemp && r.purge_s >= req.minPurge);
+  if (normalized.minTemp > normalized.maxTemp || normalized.minPurge > normalized.maxPurge) {
+    return {error: '제약조건의 상한과 하한이 충돌합니다. 범위를 수정해 주세요.'};
+  }
+  const all = payload.recipes;
+  const filtered = all.filter(r =>
+    r.temperature_C >= normalized.minTemp && r.temperature_C <= normalized.maxTemp &&
+    r.purge_s >= normalized.minPurge && r.purge_s <= normalized.maxPurge &&
+    (normalized.flowChoice === 'any' || r.flow_sccm === normalized.flowChoice) &&
+    (normalized.pulseChoice === 'any' || r.pulse_ms === normalized.pulseChoice));
   if (!filtered.length) return {error:'해당 제한조건에 맞는 실측 레시피가 없습니다. 미측정 조건을 만들어 추천하지 않습니다.'};
   const scored = filtered.map(r => {
-    const cycles = cyclesFor(req.targetNm, r.gpc_mean_A);
+    const cycles = cyclesFor(normalized.targetNm, r.gpc_mean_A);
     return {...r, cycles, sequence_time_s: sequenceSeconds(r, cycles)};
   });
-  if (req.objective === 'balanced') {
+  if (normalized.objective === 'balanced') {
     const times = scored.map(r => r.sequence_time_s), gpcs = scored.map(r => r.gpc_mean_A);
     const tmin = Math.min(...times), tmax = Math.max(...times), gmin = Math.min(...gpcs), gmax = Math.max(...gpcs);
     scored.forEach(r => {r.balance_score = 0.65 * (r.sequence_time_s - tmin) / Math.max(1, tmax - tmin) + 0.35 * (gmax - r.gpc_mean_A) / Math.max(.001, gmax - gmin);});
     scored.sort((a,b) => a.balance_score - b.balance_score || a.sequence_time_s - b.sequence_time_s);
-  } else if (req.objective === 'gpc') {
+  } else if (normalized.objective === 'gpc') {
     scored.sort((a,b) => b.gpc_mean_A - a.gpc_mean_A || a.sequence_time_s - b.sequence_time_s);
   } else {
     scored.sort((a,b) => a.sequence_time_s - b.sequence_time_s || b.gpc_mean_A - a.gpc_mean_A);
   }
-  return {best: scored[0], feasible: scored.length};
+  return {best:scored[0], feasible:scored.length, ranked:scored, request:normalized};
 }
 
-function displayRecipe(result, payload) {
+function constraintDescription(req) {
+  const parts = [`${req.targetNm} nm`, `온도 ${req.minTemp}~${req.maxTemp}°C`,
+    `purge ${req.minPurge}~${req.maxPurge}s`];
+  if (req.flowChoice !== 'any') parts.push(`Ar ${req.flowChoice}sccm`);
+  if (req.pulseChoice !== 'any') parts.push(`pulse ${req.pulseChoice}ms`);
+  return parts.join(' · ');
+}
+
+function displayRecipe(result) {
   const root = $('#recipe-output');
   root.replaceChildren();
   const status = $('#model-status');
   if (result.error) {
-    status.textContent = '미측정 조건 거부';
+    status.textContent = '추천 보류 · 입력 검토';
     root.append(element('p','lab-error', '⚠ '+result.error));
-    root.append(element('p','output-warning','추천을 생성하지 않았습니다. 조건을 수정하거나 추가 실험을 검토하세요.'));
+    root.append(element('p','output-warning','조건을 수정해 주세요. 현재 요청으로 보고 가능한 후보는 생성하지 않았습니다.'));
     return;
   }
-  status.textContent = '실측 범위 검토';
+  status.textContent = `실측 ${result.feasible}/16 후보 검토`;
   const r = result.best;
+  root.append(element('p','decision-eyebrow','RECOMMENDATION / VERIFIED DOE CANDIDATE'));
   root.append(element('h3','', '선택된 공정 후보'));
   const main = element('div','metric-big',`${r.temperature_C}°C`);
   const unit = element('span','',`Ar ${r.flow_sccm} sccm`);
@@ -139,10 +168,68 @@ function displayRecipe(result, payload) {
     [`${r.gpc_mean_A.toFixed(3)}`, '관측 평균 GPC (Å/cycle)'],
     [`${r.cycles}`, '목표 두께 환산 cycles'],
     [`${(r.sequence_time_s / 60).toFixed(2)}`, '가정 시퀀스 시간 (분)'],
-  ].forEach(([value,label]) => {const box = element('div');box.append(element('strong','',value),element('span','',label));metrics.append(box)});
+  ].forEach(([value,label]) => {const box=element('div');box.append(element('strong','',value),element('span','',label));metrics.append(box);});
   root.append(metrics);
-  root.append(element('p','output-warning',`유효한 실측 후보 ${result.feasible}/16개. 값은 2회 반복 측정한 GPC 평균을 이용한 계산으로, 장비 지연시간·포화 여부·막 품질은 반영하지 않았습니다.`));
-  root.append(element('p','output-warning',`비교 기준 v0(제약 무시/GPC 최대화)는 동일 목표에서도 반드시 최단 시퀀스 조건이 아닙니다. 자세한 모델 검증은 상세 분석 앱에서 확인할 수 있습니다.`));
+  const evidence=element('div','decision-evidence');
+  evidence.append(element('span','',`GPC 표준편차 ±${r.gpc_sd_A.toFixed(5)} Å/cycle (n=${r.replications})`));
+  evidence.append(element('span','',`일치하는 실측 후보 ${result.feasible} / 전체 16개`));
+  root.append(evidence);
+  const rationale = result.request.objective === 'gpc'
+    ? '허용 후보 중 평균 GPC가 최대인 조건을 선택했습니다. 동일 GPC일 때만 시간을 비교합니다.'
+    : result.request.objective === 'balanced'
+      ? '허용 후보 내 시간 65%·GPC 35%의 정규화된 점수를 비교했습니다. 가중치는 프로젝트 설계값이며 품질 인증이 아닙니다.'
+      : '허용 후보 중 계산상 시퀀스 시간이 최소인 조건을 선택했습니다. 동률이면 평균 GPC를 비교합니다.';
+  const box=element('div','decision-rationale');
+  box.append(element('strong','','선정 근거'),element('p','',rationale),element('small','',`적용 조건: ${constraintDescription(result.request)}`));
+  root.append(box);
+  root.append(element('p','output-warning',`이 결과는 논문 실측 GPC의 2회 반복 평균으로 계산했습니다. 장비 지연시간, 포화·균일도·불순물 및 실제 막 품질은 검증되지 않았습니다.`));
+}
+
+let currentRanked = [];
+let showAllCandidates = false;
+let lastRequest = null;
+function updateCandidateRows() {
+  const body = $('#candidate-rows');
+  body.replaceChildren();
+  const shown = showAllCandidates ? currentRanked : currentRanked.slice(0,6);
+  shown.forEach((r,i) => {
+    const row = element('tr',i===0?'candidate-best':'');
+    const values=[`${i+1}${i===0?' · 추천':''}`,`${r.temperature_C}°C`,`${r.flow_sccm} sccm`,
+      `${r.pulse_ms} ms`,`${r.purge_s} s`,`${r.gpc_mean_A.toFixed(3)} ± ${r.gpc_sd_A.toFixed(5)}`,
+      `${r.cycles}`,`${(r.sequence_time_s/60).toFixed(2)}분`];
+    values.forEach(v => row.append(element('td','',v)));
+    body.append(row);
+  });
+  const toggle = $('#toggle-candidates');
+  toggle.hidden = currentRanked.length<=6;
+  toggle.textContent = showAllCandidates ? '상위 6개만 보기' : `전체 ${currentRanked.length}개 보기`;
+}
+function displayCandidates(result) {
+  const panel=$('#candidate-panel');
+  if (result.error) {
+    currentRanked=[]; lastRequest=null; showAllCandidates=false;
+    $('#candidate-rows').replaceChildren();
+    panel.hidden=true;
+    return;
+  }
+  currentRanked=result.ranked;
+  lastRequest=result.request;
+  showAllCandidates=false;
+  const objLabel={time:'시간 최소화',gpc:'GPC 최대화',balanced:'시간 65% + GPC 35% 균형'}[result.request.objective];
+  $('#candidate-intro').textContent = `${constraintDescription(result.request)} · ${objLabel} 기준으로 ${result.feasible}개 후보를 정렬했습니다.`;
+  panel.hidden=false;
+  updateCandidateRows();
+}
+function downloadCandidatesCsv() {
+  if (!currentRanked.length) return;
+  const headings=['rank','temperature_C','flow_sccm','pulse_ms','purge_s','gpc_mean_A_per_cycle','gpc_sd_A_per_cycle','replications','cycles','sequence_time_min'];
+  const lines=[headings.join(',')];
+  currentRanked.forEach((r,i) => lines.push([i+1,r.temperature_C,r.flow_sccm,r.pulse_ms,r.purge_s,
+    r.gpc_mean_A,r.gpc_sd_A,r.replications,r.cycles,(r.sequence_time_s/60).toFixed(3)].join(',')));
+  const file=new Blob(['\uFEFF'+lines.join('\n')],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(file);
+  const a=document.createElement('a');a.href=url;a.download='ald-optix-observed-candidates.csv';
+  document.body.append(a);a.click();a.remove();URL.revokeObjectURL(url);
 }
 
 async function boot() {
@@ -186,14 +273,30 @@ async function boot() {
     });
     function render(event) {
       if (event) event.preventDefault();
-      const req = {targetNm:Number($('#target-nm').value),maxTemp:Number($('#max-temp').value),objective:$('#objective').value,minPurge:Number($('#min-purge').value)};
-      displayRecipe(chooseRecipe(payload, req), payload);
+      const req = {
+        targetNm: $('#target-nm').value === '' ? NaN : Number($('#target-nm').value),
+        minTemp:Number($('#min-temp').value),maxTemp:Number($('#max-temp').value),
+        flowChoice:$('#flow-choice').value === 'any' ? 'any' : Number($('#flow-choice').value),
+        pulseChoice:$('#pulse-choice').value === 'any' ? 'any' : Number($('#pulse-choice').value),
+        minPurge:Number($('#min-purge').value),maxPurge:Number($('#max-purge').value),
+        objective:$('#objective').value,
+      };
+      const result=chooseRecipe(payload,req);
+      displayRecipe(result);
+      displayCandidates(result);
     }
-    $('#recipe-form').addEventListener('submit', render);
+    const form=$('#recipe-form');
+    form.addEventListener('submit', render);
+    form.addEventListener('change', render);
+    $('#target-nm').addEventListener('input', render);
+    $('#reset-recipe').addEventListener('click',()=>{form.reset();render();});
+    $('#toggle-candidates').addEventListener('click',()=>{showAllCandidates=!showAllCandidates;updateCandidateRows();});
+    $('#download-candidates').addEventListener('click',downloadCandidatesCsv);
     render();
   } catch (err) {
     $('#model-status').textContent = '데이터 오류';
     output.replaceChildren(element('p','lab-error','실측 데이터 로딩 또는 무결성 검사에 실패했습니다. 원시 CSV와 data.json의 일치 여부를 확인해 주세요.'));
+    displayCandidates({error:'data error'});
     console.error('ALD-OPTIX dataset load error:',err);
   }
 }

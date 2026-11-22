@@ -46,3 +46,54 @@
 @media(max-width:960px){.content-card{padding:21px}.main-nav{gap:12px}.nav-layout{gap:12px}}
 @media(max-width:800px){html{scroll-padding-top:125px}.topbar{height:auto}.nav-layout{display:grid;grid-template-columns:1fr auto;gap:0;min-height:106px;padding-top:10px;padding-bottom:6px}.nav-layout>.brand{grid-column:1;grid-row:1}.nav-layout>.btn-small{grid-column:2;grid-row:1}.main-nav{grid-column:1/-1;grid-row:2;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;width:100%;font-size:12px;border-top:1px solid var(--line);padding-top:5px;margin-top:7px;white-space:normal;text-align:center}.main-nav a{padding:8px 0;line-height:1.3;word-break:keep-all}.comparison-grid,.method-grid,.result-grid{grid-template-columns:1fr}.content-card{padding:22px}.result-number{font-size:40px}}
 @media(max-width:360px){.main-nav{font-size:11px;gap:3px}.nav-layout>.btn-small{padding:0 8px}}
+
+/* Observed-recipe decision studio: eight bounded inputs and ranked candidates. */
+.studio-context{display:flex;align-items:center;gap:14px;background:#e5f2e7;border:1px solid #c8ddcb;border-radius:12px;padding:14px 19px;margin:-12px 0 22px;color:#355842}
+.studio-context-icon{font-size:24px;line-height:1;color:#2d8b5a}
+.studio-context p{font-size:12px;line-height:1.7;margin:0}
+.studio-context strong{font-size:13px;color:#164f35}
+.lab-card{grid-template-columns:1.05fr 1fr}
+.lab-control{padding:32px 27px}
+.lab-control form{gap:13px}
+.studio-group-title{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:850;color:#1c5439;border-bottom:1px solid #e1ebe1;padding:10px 0 8px;margin-top:4px}
+.studio-group-title span{font-size:10px;letter-spacing:.09em;color:#fff;background:#258151;padding:3px 7px;border-radius:4px}
+.studio-group-title small{font-weight:500;font-size:10px;color:#708779;margin-left:auto;text-align:right}
+.studio-input-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px 12px}
+.studio-input-grid label{font-size:12px;min-width:0}
+.studio-input-grid label span{font-size:10px}
+.studio-input-grid select,.studio-input-grid input{padding:0 9px;min-height:44px;font-size:12px}
+.studio-actions{display:flex;gap:8px;align-items:stretch}
+.studio-actions .btn{width:auto;flex:1;min-width:0;padding:0 16px}
+.studio-reset,.studio-export{border:1px solid #b6d1c0;border-radius:8px;padding:10px 14px;background:#fff;color:#215a40;font-size:12px;font-weight:750;white-space:nowrap}
+.studio-reset:hover,.studio-export:hover{background:#e7f5e8}
+.studio-export{background:#195b40;color:#fff;border-color:#195b40}
+.studio-export:hover{background:#237751}
+.studio-form-note{font-size:11px;color:#6b8473;line-height:1.7;margin:0}
+.lab-output{min-height:635px;padding:32px 30px 22px}
+.output-body{padding-top:32px;min-height:0}
+.decision-eyebrow{font-size:9px;letter-spacing:.1em;color:#9cd3b3;font-weight:850;margin:0 0 12px}
+.decision-evidence{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.decision-evidence span{display:inline-block;border:1px solid #36795d;background:#18503d;padding:6px 9px;border-radius:6px;color:#d1ebd2;font-size:10px}
+.decision-rationale{border:1px solid #47745d;border-left:3px solid #c6f0aa;border-radius:8px;padding:14px 15px;background:#174333;color:#e1f4e1}
+.decision-rationale strong{font-size:12px;color:#d0f2b3}
+.decision-rationale p{font-size:12px;line-height:1.7;margin:5px 0 8px}
+.decision-rationale small{font-size:10px;color:#adcdb6;line-height:1.6;display:block}
+.candidate-panel{margin-top:21px;border:1px solid #d1e2d4;background:#fff;border-radius:15px;padding:27px 28px 20px;box-shadow:0 15px 32px #12452c0b}
+.candidate-panel[hidden]{display:none!important}
+.candidate-heading{display:flex;justify-content:space-between;align-items:end;gap:16px;margin-bottom:20px}
+.candidate-heading h3{font-size:25px;letter-spacing:-.05em;margin:8px 0 4px}
+.candidate-heading p{font-size:12px;color:#6d8275;margin:0;max-width:690px;line-height:1.6}
+.candidate-controls{display:flex;gap:8px;flex-shrink:0}
+.candidate-controls button[hidden]{display:none}
+.candidate-table-wrap{width:100%;overflow:auto;border:1px solid #e0eae0;border-radius:9px}
+.candidate-table{border-collapse:collapse;width:100%;min-width:790px;font-size:12px;text-align:left;font-variant-numeric:tabular-nums}
+.candidate-table thead{background:#eef5ed;color:#3a6149}
+.candidate-table th,.candidate-table td{padding:13px 12px;border-bottom:1px solid #e7ede6;white-space:nowrap}
+.candidate-table th{font-size:11px;letter-spacing:.025em}
+.candidate-table tbody tr:last-child td{border-bottom:0}
+.candidate-table tbody tr:hover{background:#f2f9f2}
+.candidate-best{background:#e4f5e6;color:#174d33;font-weight:800}
+.studio-table-footnote{display:flex;justify-content:space-between;gap:14px;margin-top:14px;font-size:10px;color:#748679;line-height:1.65}
+@media(max-width:1000px){.lab-card{grid-template-columns:1fr}.lab-output{min-height:0}.output-body{padding-bottom:15px}.candidate-heading{align-items:start;flex-direction:column}.studio-table-footnote{flex-direction:column;gap:5px}}
+@media(max-width:530px){.lab-control,.lab-output{padding:23px 17px}.studio-input-grid{gap:10px 7px}.studio-input-grid label{font-size:11px}.studio-input-grid label span{font-size:9px}.studio-input-grid select,.studio-input-grid input{font-size:11px;padding:0 7px}.studio-actions .btn{padding:0 11px;font-size:12px}.studio-context{padding:12px 13px;align-items:start}.candidate-panel{padding:21px 13px}.candidate-heading h3{font-size:22px}.candidate-controls{width:100%}.candidate-controls button{flex:1;padding:9px 10px}.output-metrics{gap:6px}.output-metrics strong{font-size:18px}}
+@media(max-width:360px){.studio-input-grid{grid-template-columns:1fr}.lab-control{padding:22px 16px}}
