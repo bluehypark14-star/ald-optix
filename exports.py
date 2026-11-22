@@ -21,6 +21,8 @@ from agent import (REQUEST_FIELDS, _trusted_report, validated_request, dispatch_
 EXECUTION_MODES = {
     "Deterministic tools": "RULE_BASED_TOOLS__NOT_LLM",
     "LLM tool-calling": "LLM_API_REQUESTED__VERIFY_WITH_PROVIDER",
+    "Gemini function-calling": "GEMINI_API_REQUESTED__VERIFY_WITH_PROVIDER",
+    "Gemini mock protocol": "SIMULATED_GEMINI_PROTOCOL__NOT_LIVE",
     "Mock LLM protocol": "SIMULATED_LLM_PROTOCOL__NOT_LIVE",
 }
 
@@ -180,6 +182,8 @@ def audit_execution(mode: str, request: str | dict, report: str,
         'Deterministic tools': 'RULE_BASED',
         'Mock LLM protocol': 'INJECTED_CLIENT',
         'LLM tool-calling': 'OPENAI_SDK_CLIENT',
+        'Gemini function-calling': 'GEMINI_SDK_CLIENT',
+        'Gemini mock protocol': 'GEMINI_INJECTED_CLIENT',
     }
     expected_roundtrips = (isinstance(roundtrips, int) and
                            not isinstance(roundtrips, bool) and

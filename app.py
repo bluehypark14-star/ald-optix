@@ -19,7 +19,7 @@ from core import (
     cross_validate, nested_cross_validate, quality_gate, scenario_suite,
     build_report, EVIDENCE, SOURCE, DOI, sensitivity_analysis, engineering_casebook,
 )
-from agent import deterministic_demo, run_llm_agent, validated_request
+from agent import deterministic_demo, run_gemini_agent, validated_request, GEMINI_DEFAULT_MODEL
 from ui_state import workflow_is_current
 from exports import make_recipe_review, trace_download_json, audit_execution
 
@@ -195,23 +195,23 @@ with t2:
     st.header("AI Engineering Workflow")
     st.write("구조화 요청 또는 제한된 자연어 → 근거 검색 → 실측 조건 필터링 → 모델·검증 실행 → 보고서 생성. 도구 호출 기록을 공개합니다.")
     st.markdown("**실행 모드 선택**")
-    selected_mode=st.radio("방식",["규칙 기반 워크플로 (무료·기본)","실제 LLM 도구 호출 (선택 사항)"],horizontal=True,label_visibility='collapsed')
+    selected_mode=st.radio("방식",["규칙 기반 워크플로 (무료·기본)","Gemini LLM 도구 호출 (무료 등급·선택 사항)"],horizontal=True,label_visibility='collapsed')
     api_key=''
-    llm_chosen=selected_mode.startswith('실제 LLM')
+    llm_chosen=selected_mode.startswith('Gemini LLM')
     if llm_chosen:
-        st.warning("LLM 모드는 별도 API 자격 증명이 필요합니다. ChatGPT 구독만으로 자동 연결되지 않습니다. 호출 비용이 발생할 수 있습니다. 접근 코드 제한은 세션 기준이므로 공개 서비스의 전역 비용 제한을 대신하지 않습니다.")
+        st.warning("Gemini 무료 등급에서 지원하는 모델을 사용합니다. 프로젝트에 결제 계정을 연결하면 요금이 발생할 수 있습니다. 접근 코드 제한은 세션 기준이므로 전역 호출 제한을 대신하지 않습니다.")
         st.caption("보안을 위해 방문자의 API 키 입력은 받지 않습니다. 앱 운영자의 서버 비밀 설정과 시연 접근 코드가 필요합니다.")
-        server_key=os.getenv('OPENAI_API_KEY','')
+        server_key=os.getenv('GEMINI_API_KEY','')
         server_passcode=os.getenv('DEMO_ACCESS_CODE','')
         demo_enabled=os.getenv('ENABLE_LLM_DEMO','').strip().lower() in ('1','true','yes')
         try:
-            server_key=server_key or st.secrets.get('OPENAI_API_KEY','')
+            server_key=server_key or st.secrets.get('GEMINI_API_KEY','')
             server_passcode=server_passcode or st.secrets.get('DEMO_ACCESS_CODE','')
             demo_enabled=demo_enabled or str(st.secrets.get('ENABLE_LLM_DEMO','')).strip().lower() in ('1','true','yes')
         except Exception:
             pass
         if not demo_enabled:
-            st.info('공개 데모에서는 실시간 LLM 호출이 기본 비활성화되어 있습니다. 운영자가 ENABLE_LLM_DEMO=true를 설정했을 때만 연결됩니다.')
+            st.info('실시간 Gemini 호출은 기본 비활성화입니다. 운영자가 ENABLE_LLM_DEMO=true와 서버 측 키를 설정해야 사용할 수 있습니다.')
         if demo_enabled and server_key and server_passcode:
             attempts=st.session_state.get('llm_access_failures',0)
             if attempts>=5:
@@ -230,7 +230,7 @@ with t2:
             st.warning('이 세션의 실시간 LLM 도구 호출 횟수(5회)를 소진했습니다.')
             api_key='' 
         if not api_key:
-            st.info("운영자가 서버 비밀 설정(ENABLE_LLM_DEMO, OPENAI_API_KEY, DEMO_ACCESS_CODE)을 연결하고 올바른 접근 코드를 입력한 경우에만 실시간 LLM 도구 호출이 실행됩니다. 그 외에는 규칙 기반 모드를 이용하세요.")
+            st.info("운영자가 서버 비밀 설정(ENABLE_LLM_DEMO, GEMINI_API_KEY, DEMO_ACCESS_CODE)을 연결하고 올바른 접근 코드를 입력한 경우에만 실시간 LLM 도구 호출이 실행됩니다. 그 외에는 규칙 기반 모드를 이용하세요.")
     input_mode=st.radio('요청 입력 방식', ['구조화 입력 (권장)', '제한된 자연어 입력'], horizontal=True,
                         help='구조화 입력은 수치·단위를 명확하게 전달하며 누락된 제약을 임의 추측하지 않습니다.')
     if input_mode.startswith('구조화'):
@@ -262,7 +262,7 @@ with t2:
         prompt=st.text_area('공정 엔지니어 업무 요청 (지원 범위 제한)',
               value='Al2O3 10nm, 최대 200°C, 시퀀스 시간 최소화',height=90)
         st.caption('일반적인 자연어를 완전히 이해하지 않습니다. 해석 범위를 벗어난 단어·조건이 있으면 추천을 중단합니다. 입력 예: Al2O3 10nm, Ar 유량 20sccm만, GPC 최대화')
-    current_mode = 'LLM tool-calling' if llm_chosen else 'Deterministic tools'
+    current_mode = 'Gemini function-calling' if llm_chosen else 'Deterministic tools'
     # A Streamlit rerun preserves session_state. Never display an earlier analysis
     # after the user edits ANY prompt character or switches execution mode.
     if not workflow_is_current(st.session_state.get('last_workflow'), prompt, current_mode):
@@ -279,7 +279,7 @@ with t2:
             try:
                 if llm_chosen:
                     st.session_state['llm_live_calls']=st.session_state.get('llm_live_calls',0)+1
-                response, trace=run_llm_agent(prompt,api_key) if llm_chosen else deterministic_demo(prompt)
+                response, trace=run_gemini_agent(prompt,api_key,model=GEMINI_DEFAULT_MODEL) if llm_chosen else deterministic_demo(prompt)
                 st.session_state['last_workflow']={
                     'response':response, 'trace':trace,
                     'mode':current_mode, 'request':prompt,
@@ -373,7 +373,7 @@ with t4:
 - **계산:** 2회 평균 GPC, 목표 두께에 대한 cycle 수, 두 pulse·두 purge로 단순화한 시간.
 - **예측:** 주효과 Ridge 회귀의 교차검증 오차. 관측하지 않은 조건의 양산 성능을 예측·인증하지 않음.
 - **미검증:** ALD saturation, 박막 균일도·전기적 특성, 실제 공정시간·수율·원가, 다른 장비로의 전이.
-- **AI 관련:** 무료 기본 모드는 ML + 규칙 기반 도구 워크플로. LLM 도구 호출은 API가 연결되어 실제 실행했을 때만 그 명칭으로 보고.
+- **AI 관련:** 무료 기본 모드는 ML + 규칙 기반 도구 워크플로. Gemini 도구 호출은 실제 API와 연결하여 실행한 경우에만 그 명칭으로 보고.
 """)
     st.info("본 웹사이트는 가상 기업의 대학 수업 과제이며, 실제 상용 제조 시스템이나 Pan & Lei 연구진의 공식 서비스가 아닙니다.")
     st.markdown("**검증 기록:** GitHub repository의 `docs/validation.md` 참고. 실제 LLM 호출 기록은 운영자 실행 후에만 확보됩니다.")
