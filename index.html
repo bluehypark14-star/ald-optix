@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="ALD-OPTIX는 가상 반도체 박막 공정 기업입니다. 공개 ALD 논문 데이터 기반 레시피 후보 비교, 근거 검증, AI 공정 의사결정을 시연합니다." />
+  <meta name="theme-color" content="#092f24" />
+  <title>ALD-OPTIX | Evidence before optimization.</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="config.js" defer></script>
+  <script src="main.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">본문 바로가기</a>
+  <header class="topbar" id="top">
+    <div class="container nav-layout">
+      <a class="brand" href="#top" aria-label="ALD-OPTIX 첫 화면"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><span><strong>ALD<span class="brand-dot">·</span>OPTIX</strong><small>MATERIALS INTELLIGENCE</small></span></a>
+      <nav class="main-nav" aria-label="주요 메뉴">
+        <a href="#challenge">문제 정의</a><a href="#limits">기존 한계</a><a href="#solution">AI 솔루션</a><a href="#proof">검증·개선</a><a href="#impact">결과·효과</a>
+      </nav>
+      <a class="btn btn-outline btn-small" href="#lab">레시피 체험 <span aria-hidden="true">↗</span></a>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <div class="eyebrow"><span class="light-dot"></span> PROCESS ENGINEERING, AUGMENTED</div>
+          <h1 id="hero-title">더 빠른 답보다,<br/><em>검증할 수 있는 답.</em></h1>
+          <p class="hero-intro">ALD 박막 공정의 후보를 고를 때, 높은 GPC가 반드시 좋은 해답은 아닙니다. 우리는 실제 실험 데이터를 바탕으로 <strong>조건 탐색 → 계산 → 제약 검증 → 근거 보고</strong>를 하나의 워크플로로 연결합니다.</p>
+          <div class="hero-actions"><a class="btn btn-accent" href="#lab">레시피 미리보기 <span aria-hidden="true">↗</span></a><a class="btn btn-ghost" href="#solution">솔루션 구조 보기 <span aria-hidden="true">→</span></a></div>
+          <p class="hero-disclaimer">UNIVERSITY PROJECT · 가상 기업 · 실험 전 의사결정 지원 · 실제 장비 제어 아님</p>
+        </div>
+        <div class="hero-visual" aria-label="ALD 박막과 데이터 분석 개념 그래픽">
+          <div class="wafer-halo"></div><div class="wafer"><div class="wafer-notch"></div><div class="wafer-grid"></div><span class="wafer-tag">Al₂O₃ / TMA + H₂O</span></div>
+          <div class="floating-panel panel-top"><small>DATA CONFIDENCE</small><strong>16 / 16</strong><span>실측 DOE 조합만 조회</span></div>
+          <div class="floating-panel panel-bottom"><small>DECISION TRACE</small><div class="tiny-bars"><b></b><b></b><b></b><b></b><b></b><b></b><b></b></div><span>출처 + 계산 + 검증</span></div>
+          <div class="visual-bottom">ALD PROCESS INTELLIGENCE <span>◌ 001</span></div>
+        </div>
+      </div>
+      <div class="container stats-row">
+        <div><strong>32<span>회</span></strong><small>논문 실측 GPC 기록</small></div><div><strong>16<span>개</span></strong><small>고유 공정 레시피</small></div><div><strong>4<span>개</span></strong><small>주요 공정 입력 변수</small></div><div><strong>1<span>편</span></strong><small>근거가 연결된 DOE 연구</small></div>
+      </div>
+    </section>
+
+    <section class="section" id="challenge" aria-labelledby="challenge-title">
+      <div class="container section-grid">
+        <div><div class="overline">01 / PROBLEM DEFINITION · 문제 정의</div><h2 id="challenge-title">ALD 레시피 선정의<br/><span>의사결정 문제</span></h2><p class="section-desc">ALD-OPTIX는 반도체용 Al₂O₃ 박막 공정의 데이터 기반 의사결정을 지원하는 가상 B2B 소재 기업입니다. 공정 엔지니어는 고객의 목표 박막 두께와 장비 조건을 바탕으로 기존 실험자료에서 적합한 레시피 후보를 신속하게 선별해야 합니다.</p><a class="inline-link" href="#limits">기존 접근 방식 살펴보기 <span aria-hidden="true">→</span></a></div>
+        <div class="problem-cards"><article class="problem-card"><span class="card-no">01</span><div><h3>업무 입력</h3><p>목표 두께, 온도 제한, Ar 유량, pulse·purge 조건 및 최적화 목적을 입력합니다.</p></div></article><article class="problem-card"><span class="card-no">02</span><div><h3>해결 과제</h3><p>제약조건을 만족하는 실측 레시피를 찾고, 성장률(GPC)과 필요한 cycle 및 이론 시퀀스 시간을 비교합니다.</p></div></article><article class="problem-card"><span class="card-no">03</span><div><h3>업무 산출물</h3><p>추천 후보와 계산 근거, 적용 한계, 추가 실험 필요성을 담은 공정 검토 보고서를 제공합니다. 조건을 충족하는 후보가 없으면 추천하지 않습니다.</p></div></article></div>
+      </div>
+    </section>
+
+    <section class="section soft" id="limits" aria-labelledby="limits-title">
+      <div class="container"><div class="overline">02 / LIMITS OF EXISTING APPROACHES · 기존 접근 방식의 한계</div><div class="section-heading"><h2 id="limits-title">GPC 중심 판단의<br/><span>한계와 개선 방향</span></h2><p>공개 실험자료를 수작업으로 비교하면 출처·단위·제약을 반복 확인해야 합니다. 비교를 위해 GPC만 최대화하는 단순 기준 규칙(v0)을 설정했습니다. 실제 기업의 모든 기존 업무를 대표하는 규칙은 아닙니다.</p></div>
+        <div class="comparison-grid">
+          <article class="content-card"><span class="proof-label">BASELINE / v0</span><h3>GPC 중심 기준 방식</h3><p>평균 GPC가 가장 높은 조건을 선택합니다. 성장률을 비교하기 쉽지만 온도·유량·pulse·purge 제약과 전체 시퀀스 시간을 목적함수에 반영하지 않습니다.</p></article>
+          <article class="content-card improved"><span class="proof-label">IMPROVED / v1</span><h3>목적·제약 반영 방식</h3><p>먼저 제약을 만족하는 실측 후보만 남기고, 목표 두께에 필요한 cycle과 이론 시퀀스 시간을 계산합니다. 선택한 목적에 따라 비교하고 독립 검증을 거쳐 결과를 제시합니다.</p></article>
+        </div>
+        <div class="solution-note"><span class="note-icon">i</span><div><strong>성장률과 시퀀스 시간은 같은 지표가 아닙니다.</strong><p>GPC가 높아 cycle 수가 줄어도 purge가 길면 총 시퀀스 시간이 증가할 수 있습니다. 아래 결과에서는 동일한 10 nm 조건의 비교 사례를 확인할 수 있습니다.</p></div></div>
+      </div>
+    </section>
+
+    <section class="section" id="solution" aria-labelledby="solution-title">
+      <div class="container"><div class="overline">03 / WHY AI &amp; HOW · AI 활용의 필요성과 방법</div><div class="section-heading"><h2 id="solution-title">AI 분석과<br/><span>검증 가능한 계산의 결합</span></h2><p>수작업 비교만으로는 여러 공정 인자와 GPC의 관계를 정량적으로 평가하거나 모델의 예측 오차를 체계적으로 비교하기 어렵습니다. 머신러닝은 데이터의 패턴을 평가하고, 공학적 계산과 제약 검증은 결과의 안전성과 재현성을 담당합니다.</p></div>
+        <div class="method-grid">
+          <article class="content-card"><span class="proof-label">01 / MACHINE LEARNING</span><h3>Ridge 회귀</h3><p>온도·Ar 유량·pulse·purge와 GPC의 관계를 모델링합니다. 반복 측정을 같은 그룹으로 유지하며 모델 복잡도와 예측 오차를 평가합니다.</p><small>역할: GPC 예측 모델의 내부 성능 검증</small></article>
+          <article class="content-card"><span class="proof-label">02 / ENGINEERING COMPUTATION</span><h3>제약 기반 최적화</h3><p>16개 실측 후보를 입력 제약으로 필터링하고 GPC·cycle·이론 시퀀스 시간을 비교합니다. ML 예측으로 미측정 레시피를 생성하지 않습니다.</p><small>역할: 결정론적 Python 계산 및 독립 검증</small></article>
+          <article class="content-card"><span class="proof-label">03 / TOOL WORKFLOW</span><h3>도구 실행 자동화</h3><p>구조화 요청, 고정 근거 카드 검색, 계산, 검증, 보고서 생성을 연결합니다. 선택형 LLM Function Calling은 도구 호출을 지원하며, 원래 사용자 제약을 변경할 수 없습니다.</p><small>기본: 규칙 기반 · LLM: 모의 호출 검증, 실제 API 미검증</small></article>
+        </div>
+        <h3 class="subsection-title">공정 검토 워크플로</h3>
+        <div class="workflow"><div class="workflow-card"><span class="work-number">01</span><h3>REQUEST</h3><p>목표 두께와 제약을 구조화</p><span class="tech">사용자 입력</span></div><div class="flow-arrow">→</div><div class="workflow-card"><span class="work-number">02</span><h3>RETRIEVE</h3><p>논문 기반 실측 조건 검색</p><span class="tech">근거 카드 / Python</span></div><div class="flow-arrow">→</div><div class="workflow-card"><span class="work-number">03</span><h3>COMPUTE</h3><p>GPC · cycle · 시간 비교</p><span class="tech">수치 계산</span></div><div class="flow-arrow">→</div><div class="workflow-card"><span class="work-number">04</span><h3>VALIDATE</h3><p>실측 범위·제약·한계 점검</p><span class="tech">검증 게이트</span></div><div class="flow-arrow">→</div><div class="workflow-card"><span class="work-number">05</span><h3>REPORT</h3><p>근거와 가정을 함께 제시</p><span class="tech">엔지니어 리포트</span></div></div>
+        <div class="solution-note"><span class="note-icon">i</span><div><strong>두 개의 웹 서비스를 분리했습니다.</strong><p>HTML 기업 홈페이지는 Cloudflare Pages용이며, Python 기반 상세 분석 앱은 Streamlit Community Cloud에 연결할 수 있습니다. 브라우저 미리보기는 공개 JSON으로 계산하며 ML 모델 학습이나 LLM 호출을 실행하지 않습니다.</p></div></div>
+      </div>
+    </section>
+
+    <section class="section soft" id="proof" aria-labelledby="proof-title"><div class="container"><div class="overline">04 / VERIFICATION &amp; IMPROVEMENT · 결과 검증 및 개선 과정</div><div class="section-heading"><h2 id="proof-title">모델의 개선 과정과<br/><span>결과 검증</span></h2><p>반복 측정값이 학습·평가에 나뉘어 유입되지 않도록, 동일 레시피의 2회 측정을 같은 그룹으로 묶어 평가했습니다.</p></div>
+      <div class="method-grid improvement-steps" aria-label="머신러닝 모델 개선 과정">
+        <article class="content-card"><span class="proof-label">STEP 01 / BASELINE</span><h3>기준 모델 설정</h3><p>학습 데이터 평균을 예측값으로 쓰는 단순 모델을 기준으로 삼았습니다. 기준 MAE는 약 0.123 Å/cycle입니다.</p></article>
+        <article class="content-card"><span class="proof-label">STEP 02 / DIAGNOSIS</span><h3>복잡한 모델의 한계</h3><p>교호작용을 포함한 초기 회귀의 MAE는 약 0.159 Å/cycle로 증가했습니다. 제한된 실험 데이터에서는 복잡도가 높은 모델을 그대로 채택하기 어렵다고 판단했습니다.</p></article>
+        <article class="content-card improved"><span class="proof-label">STEP 03 / REVALIDATION</span><h3>주효과 중심 재검증</h3><p>그룹 중첩 교차검증으로 모델을 선택했습니다. 외부 검증 fold 16개에서 모두 주효과 모델이 선택되었고, MAE는 약 0.090 Å/cycle였습니다.</p></article>
+      </div>
+      <div class="proof-grid"><article class="proof-feature"><div class="proof-label">MODEL EVALUATION / INTERNAL CV</div><div class="proof-metric"><strong id="nested-mae">0.090</strong><span>Å/cycle</span></div><p>중첩 그룹 교차검증 MAE (작을수록 좋음)</p><div class="mini-chart" role="img" aria-label="기준 평균 모델 약 0.123, 초기 복잡 모델 약 0.159, 개선 중첩 모델 약 0.090 앙스트롬 매 사이클 오차"><div><span>평균 기준</span><i style="--w:77%"></i><b id="baseline-mae">0.123</b></div><div><span>초기 복잡 모델</span><i style="--w:100%"></i><b id="complex-mae">0.159</b></div><div><span>중첩 검증</span><i class="highlight" style="--w:56%"></i><b id="nested-mae-mini">0.090</b></div></div><small>단일 실험 데이터의 내부 교차검증 결과 · 외부 반응기 일반화 미검증</small></article>
+        <article class="proof-list"><div class="proof-label">ENGINEERING SAFEGUARDS</div><h3>추천 전에<br/>멈추는 시스템</h3><div><span class="tick">✓</span><p>측정하지 않은 DOE 조건은 추천하지 않음</p></div><div><span class="tick">✓</span><p>온도·유량·pulse·purge 제약 충돌 시 거부</p></div><div><span class="tick">✓</span><p>관측 GPC, 계산 시간, 미측정 품질을 구분</p></div><div><span class="tick">✓</span><p>자동 테스트로 주요 수치·오류 사례 재확인</p></div></article></div>
+      <div class="casebook-box" aria-labelledby="casebook-heading">
+        <div class="casebook-heading"><div><span class="proof-label">SCENARIO BENCHMARK / FIXED ACCEPTANCE CASES</span><h3 id="casebook-heading">8개 업무 요청 비교</h3><p>같은 요구사항에서 기존 GPC 중심 규칙과 개선한 조건 검증 절차를 비교합니다. 산업 현장 성공률이 아닌 기능 점검 결과입니다.</p></div><div class="casebook-scores"><div><strong id="case-v0-count">—</strong><span>기준 방식 통과</span></div><div><strong id="case-v1-count">—</strong><span>개선 방식 통과</span></div></div></div>
+        <div class="casebook-table-wrap"><table class="casebook-table"><thead><tr><th>업무 요청</th><th>v0</th><th>v1</th><th>개선 내용</th></tr></thead><tbody id="casebook-body"><tr><td colspan="4">검증 결과를 불러오는 중입니다.</td></tr></tbody></table></div>
+        <p class="casebook-footnote">판정 기준: 유효한 실측조건에서 요청 목적을 충족하거나, 불가능한 요청에는 이유를 제시하고 추천하지 않는 것. 막 품질 승인이 아닙니다.</p>
+      </div>
+    </div></section>
+
+    <section class="section" id="impact" aria-labelledby="impact-title">
+      <div class="container"><div class="overline">05 / RESULTS &amp; IMPACT · 최종 결과 및 기대 효과</div><div class="section-heading"><h2 id="impact-title">확인한 성과,<br/><span>기대하는 업무 효과</span></h2><p>아래 수치는 단일 공개 실험 데이터와 사전에 정의한 검증 사례에서 확인한 소프트웨어 평가 결과입니다. 실제 생산성이나 막 품질의 개선을 실측한 결과는 아닙니다.</p></div>
+        <div class="result-grid">
+          <article class="content-card result-card"><span class="proof-label">MODEL / INTERNAL CV</span><strong class="result-number">26.85<span>%</span></strong><h3>GPC 예측 MAE 감소</h3><p>평균 기준 0.123 → 중첩 검증 0.090 Å/cycle. 소규모 단일 데이터 내부 평가입니다.</p></article>
+          <article class="content-card result-card"><span class="proof-label">SCENARIO / ACCEPTANCE TEST</span><strong class="result-number">2/8 <span>→</span> 8/8</strong><h3>정의된 업무 사례 충족</h3><p>기존 기준 방식과 개선 방식의 조건 충족 및 적절한 거부를 비교했습니다.</p></article>
+          <article class="content-card result-card"><span class="proof-label">SEQUENCE / 10 NM EXAMPLE</span><strong class="result-number">47.2<span>%</span></strong><h3>이론 시퀀스 시간 감소</h3><p>동일 계산식의 예시 후보 비교. 실제 장비 시간 절감률은 아닙니다.</p></article>
+        </div>
+        <div class="casebook-box result-detail"><div class="casebook-heading"><div><span class="proof-label">10 NM / CONTROLLED COMPARISON</span><h3>같은 목표 두께, 다른 레시피</h3><p>기본 공정 제약에서 GPC 최대화와 시퀀스 시간 최소화를 비교한 고정 사례입니다.</p></div><a class="inline-link" href="#lab">직접 계산해 보기 ↗</a></div>
+          <div class="casebook-table-wrap"><table class="casebook-table result-table"><thead><tr><th scope="col">비교 항목</th><th scope="col">기준 GPC 중심 (v0)</th><th scope="col">개선 시간 중심 (v1)</th></tr></thead><tbody>
+            <tr><th scope="row">온도 · Ar 유량</th><td>175°C · 10 sccm</td><td>175°C · 10 sccm</td></tr>
+            <tr><th scope="row">각 pulse · purge</th><td>40 ms · 20 s</td><td>20 ms · 10 s</td></tr>
+            <tr><th scope="row">실측 평균 GPC</th><td>1.410 Å/cycle</td><td>1.340 Å/cycle</td></tr>
+            <tr><th scope="row">필요 cycle</th><td>71회</td><td>75회</td></tr>
+            <tr><th scope="row">이론 시퀀스 시간</th><td>47.43분</td><td><strong>25.05분</strong></td></tr>
+          </tbody></table></div>
+          <p class="casebook-footnote">계산 가정: 2 pulse + 2 purge/cycle, 장비 overhead 제외. 이 가정에서의 시간 비교일 뿐이며 최종 막 품질은 별도 실험으로 검증해야 합니다.</p>
+        </div>
+        <h3 class="subsection-title">가상 기업의 기대 효과</h3>
+        <div class="method-grid"><article class="content-card"><span class="proof-label">01 / EFFICIENCY</span><h3>반복 검토 업무 효율화</h3><p>실측 데이터 조회, 수치 환산, 후보 비교와 보고서 작성을 하나의 흐름으로 연결해 반복 작업을 줄일 수 있습니다.</p></article><article class="content-card"><span class="proof-label">02 / RISK CONTROL</span><h3>조건 누락 위험 저감</h3><p>사용자 제약과 실측 범위를 검사하고 불가능한 요청을 거부하여 부적절한 실험 후보의 검토를 줄일 수 있습니다.</p></article><article class="content-card"><span class="proof-label">03 / TRACEABILITY</span><h3>실험 계획과 근거 관리</h3><p>후보의 출처, 계산 가정과 검증 기록을 남겨 후속 실험의 우선순위 결정 및 내부 검토를 지원할 수 있습니다.</p></article></div>
+        <div class="limitation-banner"><strong>기대 효과는 실제 생산 성과의 보증이 아닙니다.</strong><p>현장 업무 시간·원가·수율을 측정하지 않았습니다. 밸브 동작, 설비 지연, purge 포화, 불순물, 균일도 및 전기적 품질은 별도 실험이 필요합니다. 실제 제조 공정 승인이나 외부 반응기 일반화는 검증하지 않았습니다.</p></div>
+      </div>
+    </section>
+
+    <section class="section" id="lab">
+      <div class="container">
+        <div class="overline">DEMO / MEASURED-RECIPE DECISION STUDIO</div>
+        <div class="section-heading"><h2>공정 조건을 조합하고,<br/><span>후보를 근거로 비교하세요.</span></h2><p>Pan &amp; Lei (2025)의 16개 실측 레시피를 대상으로 4개 공정 인자의 제약과 목적함수를 동시에 검토합니다. 새로운 조건의 GPC를 예측하거나 막 품질을 보장하지 않습니다.</p></div>
+        <div class="studio-context"><span class="studio-context-icon" aria-hidden="true">◎</span><p><strong>16개 DOE 실측 조건 · 32회 관측 기록</strong><br/>온도 175/275°C · Ar 10/20 sccm · pulse 20/40 ms · purge 10/20 s. 조건 변경 시 브라우저가 자동으로 다시 계산합니다.</p></div>
+        <div class="lab-card">
+          <div class="lab-control">
+            <div class="lab-control-title"><span class="small-tag">LIVE / OBSERVED DATA ONLY</span><h3>ALD Process Studio</h3><p>8개 입력 · 공정 제약 검증 · 목적별 후보 비교</p></div>
+            <form id="recipe-form">
+              <div class="studio-group-title"><span>01</span> 증착 목표</div>
+              <div class="studio-input-grid">
+                <label>목표 박막 두께 <span>nm</span><input id="target-nm" type="number" min="0.1" max="1000" step="0.1" value="10" required/></label>
+                <label>최적화 목적 <span>Objective</span><select id="objective"><option value="time" selected>시퀀스 시간 최소화</option><option value="gpc">GPC 최대화</option><option value="balanced">균형 (시간 65% + GPC 35%)</option></select></label>
+              </div>
+              <div class="studio-group-title"><span>02</span> 실측 공정 제약 <small>제약이 없다면 전체 실측 수준 검색</small></div>
+              <div class="studio-input-grid">
+                <label>최소 증착 온도 <span>°C</span><select id="min-temp"><option value="175" selected>175°C (기본)</option><option value="200">200°C 이상</option><option value="275">275°C 이상</option></select></label>
+                <label>최대 증착 온도 <span>°C</span><select id="max-temp"><option value="275" selected>275°C (전체)</option><option value="200">200°C 이하</option><option value="175">175°C 이하</option><option value="150">150°C 이하 (후보 없음)</option></select></label>
+                <label>Ar 유량 <span>sccm</span><select id="flow-choice"><option value="any" selected>제한 없음 (10·20)</option><option value="10">10 sccm만</option><option value="20">20 sccm만</option></select></label>
+                <label>전구체 pulse <span>ms / each</span><select id="pulse-choice"><option value="any" selected>제한 없음 (20·40)</option><option value="20">20 ms만</option><option value="40">40 ms만</option></select></label>
+                <label>최소 purge <span>s / each</span><select id="min-purge"><option value="10" selected>10 s 이상</option><option value="20">20 s 이상</option></select></label>
+                <label>최대 purge <span>s / each</span><select id="max-purge"><option value="20" selected>20 s 이하</option><option value="10">10 s 이하</option></select></label>
+              </div>
+              <div class="studio-actions"><button type="submit" class="btn btn-dark">조건 적용 · 후보 비교 <span aria-hidden="true">↗</span></button><button id="reset-recipe" type="button" class="studio-reset">초기화</button></div>
+              <p class="studio-form-note">입력값은 실측 범위의 후보를 선별하는 제약입니다. 범위 충돌 또는 실측 후보 없음은 추천 거부로 표시합니다.</p>
+            </form>
+          </div>
+          <div class="lab-output"><div class="output-top"><span>DECISION OUTPUT</span><span id="model-status" class="ready-pill">관측 기반 계산</span></div>
+            <div id="recipe-output" class="output-body" aria-live="polite" role="status"><p class="loading-note">실측 데이터를 불러오는 중입니다.</p></div>
+            <div class="output-footer"><span>DATASET · PAN &amp; LEI (2025), TABLE 5</span><a href="https://doi.org/10.3390/ma18091918" target="_blank" rel="noopener noreferrer">논문 원문 ↗</a></div>
+          </div>
+        </div>
+        <section class="candidate-panel" id="candidate-panel" aria-labelledby="candidate-heading" hidden>
+          <div class="candidate-heading"><div><span class="small-tag">RANKED / OBSERVED CANDIDATES</span><h3 id="candidate-heading">실측 후보 비교표</h3><p id="candidate-intro">제약을 만족하는 후보를 선택한 목적함수 순서로 비교합니다.</p></div><div class="candidate-controls"><button type="button" id="toggle-candidates" class="studio-reset">전체 후보 보기</button><button type="button" id="download-candidates" class="studio-export">CSV 저장 ↓</button></div></div>
+          <div class="candidate-table-wrap"><table class="candidate-table"><thead><tr><th>순위</th><th>온도</th><th>Ar</th><th>Pulse</th><th>Purge</th><th>GPC 평균 ± SD</th><th>Cycles</th><th>이론 시간</th></tr></thead><tbody id="candidate-rows"></tbody></table></div>
+          <div class="studio-table-footnote"><span>GPC 단위: Å/cycle, 반복 n=2, SD는 실측 표준편차. 시간은 두 번의 pulse와 두 번의 purge만 포함합니다.</span><span>순위는 막 품질·실제 생산 적합성 순위가 아닙니다.</span></div>
+        </section>
+        <div class="app-cta"><div><strong>더 깊은 AI 분석이 필요하다면?</strong><p>공정변수별 분석, GPC 회귀 모델 검증, 도구 실행 기록과 공정 보고서 다운로드는 상세 Streamlit 서비스에서 제공합니다.</p></div><a class="btn btn-accent" id="launch-app" href="#lab" aria-disabled="true">분석 앱 연결 전 <span aria-hidden="true">↗</span></a></div>
+        <p class="app-connection-hint" id="app-hint">분석 앱의 공개 URL은 Streamlit 배포 후 연결됩니다. 현재 페이지의 계산은 독립적으로 동작합니다.</p>
+      </div>
+    </section>
+
+    <section class="section source-section" id="source"><div class="container section-grid"><div><div class="overline">REFERENCE / RESEARCH BASIS</div><h2>모든 추천에는<br/><span>출처와 적용 범위가 필요합니다.</span></h2><p class="section-desc">본 사이트는 가상 기업을 설정한 대학 수업 프로젝트입니다. 실제 연구진 또는 반도체 기업이 운영하는 상용 서비스가 아닙니다. 원 논문의 범위를 벗어난 조건을 제조 공정에 사용해서는 안 됩니다.</p></div><div class="source-card"><span class="source-chip">PRIMARY STUDY</span><h3>Investigation and Optimization of Process Parameters on Growth Rate in Al₂O₃ Atomic Layer Deposition Using Statistical Approach</h3><p>Pan & Lei (2025), <em>Materials</em> 18(9), 1918</p><div class="source-details"><span>Source table</span><strong>Table 4–5</strong></div><div class="source-details"><span>ALD process</span><strong>Al₂O₃ · TMA / H₂O</strong></div><div class="source-details"><span>Evaluation scope</span><strong>16 DOE conditions</strong></div><a class="inline-link" href="https://doi.org/10.3390/ma18091918" rel="noopener noreferrer" target="_blank">원문 DOI 확인 <span aria-hidden="true">↗</span></a></div></div></section>
+  </main>
+  <footer><div class="container footer-grid"><div><div class="footer-brand">ALD<span>·</span>OPTIX</div><p>Evidence before optimization.</p><small>© 2026 ALD-OPTIX — Academic virtual company demonstration.</small></div><div><strong>NAVIGATION</strong><a href="#challenge">문제 정의</a><a href="#limits">기존 한계</a><a href="#solution">AI 솔루션</a><a href="#proof">검증·개선</a><a href="#impact">결과·효과</a><a href="#lab">실측 데이터 미리보기</a><a href="#source">연구 근거</a></div><div><strong>TRANSPARENCY</strong><a href="https://doi.org/10.3390/ma18091918" target="_blank" rel="noopener noreferrer">Primary research ↗</a><span>비상용 · 비양산 · 연구 교육용</span></div></div></footer>
+</body></html>
