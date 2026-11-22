@@ -1,2 +1,2 @@
-/* Public HTTPS URL of the Streamlit analysis application. Do not include credentials. */
-window.ALD_OPTIX_APP_URL = "";
+/* Streamlit AI Analysis App */
+window.ALD_OPTIX_APP_URL = "https://bluehypark14-star-ald-optix-app-tkae7h.streamlit.app/";
