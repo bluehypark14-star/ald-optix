@@ -1,0 +1,285 @@
+{
+  "title": "ALD-OPTIX — ALD Process Decision Support",
+  "source": "Pan & Lei, Materials 2025, 18(9), 1918, Tables 4–5",
+  "doi": "https://doi.org/10.3390/ma18091918",
+  "data_description": "32 measured GPC values; 16 factorial conditions, 2 replicates per condition",
+  "scope": "Al2O3 thermal ALD, TMA/H2O, one published experiment",
+  "experiment_count": 32,
+  "recipe_count": 16,
+  "baseline_MAE_A": 0.122854,
+  "initial_complex_MAE_A": 0.159204,
+  "nested_MAE_A": 0.089867,
+  "nested_selection": {
+    "main": 16
+  },
+  "comparison_10nm": {
+    "baseline_gpc_A": 1.41,
+    "baseline_cycles": 71,
+    "baseline_min": 47.428,
+    "best_gpc_A": 1.34,
+    "best_cycles": 75,
+    "best_min": 25.05,
+    "model_sequence_reduction_pct": 47.1831
+  },
+  "recipes": [
+    {
+      "temperature_C": 175,
+      "flow_sccm": 10,
+      "pulse_ms": 20,
+      "purge_s": 10,
+      "gpc_mean_A": 1.34,
+      "gpc_sd_A": 0.0,
+      "replications": 2
+    },
+    {
+      "temperature_C": 175,
+      "flow_sccm": 10,
+      "pulse_ms": 20,
+      "purge_s": 20,
+      "gpc_mean_A": 1.27,
+      "gpc_sd_A": 0.01414,
+      "replications": 2
+    },
+    {
+      "temperature_C": 175,
+      "flow_sccm": 10,
+      "pulse_ms": 40,
+      "purge_s": 10,
+      "gpc_mean_A": 1.04,
+      "gpc_sd_A": 0.05657,
+      "replications": 2
+    },
+    {
+      "temperature_C": 175,
+      "flow_sccm": 10,
+      "pulse_ms": 40,
+      "purge_s": 20,
+      "gpc_mean_A": 1.41,
+      "gpc_sd_A": 0.01414,
+      "replications": 2
+    },
+    {
+      "temperature_C": 175,
+      "flow_sccm": 20,
+      "pulse_ms": 20,
+      "purge_s": 10,
+      "gpc_mean_A": 1.225,
+      "gpc_sd_A": 0.00707,
+      "replications": 2
+    },
+    {
+      "temperature_C": 175,
+      "flow_sccm": 20,
+      "pulse_ms": 20,
+      "purge_s": 20,
+      "gpc_mean_A": 1.205,
+      "gpc_sd_A": 0.02121,
+      "replications": 2
+    },
+    {
+      "temperature_C": 175,
+      "flow_sccm": 20,
+      "pulse_ms": 40,
+      "purge_s": 10,
+      "gpc_mean_A": 1.32,
+      "gpc_sd_A": 0.0,
+      "replications": 2
+    },
+    {
+      "temperature_C": 175,
+      "flow_sccm": 20,
+      "pulse_ms": 40,
+      "purge_s": 20,
+      "gpc_mean_A": 1.265,
+      "gpc_sd_A": 0.00707,
+      "replications": 2
+    },
+    {
+      "temperature_C": 275,
+      "flow_sccm": 10,
+      "pulse_ms": 20,
+      "purge_s": 10,
+      "gpc_mean_A": 1.145,
+      "gpc_sd_A": 0.00707,
+      "replications": 2
+    },
+    {
+      "temperature_C": 275,
+      "flow_sccm": 10,
+      "pulse_ms": 20,
+      "purge_s": 20,
+      "gpc_mean_A": 0.965,
+      "gpc_sd_A": 0.00707,
+      "replications": 2
+    },
+    {
+      "temperature_C": 275,
+      "flow_sccm": 10,
+      "pulse_ms": 40,
+      "purge_s": 10,
+      "gpc_mean_A": 1.22,
+      "gpc_sd_A": 0.0,
+      "replications": 2
+    },
+    {
+      "temperature_C": 275,
+      "flow_sccm": 10,
+      "pulse_ms": 40,
+      "purge_s": 20,
+      "gpc_mean_A": 1.165,
+      "gpc_sd_A": 0.00707,
+      "replications": 2
+    },
+    {
+      "temperature_C": 275,
+      "flow_sccm": 20,
+      "pulse_ms": 20,
+      "purge_s": 10,
+      "gpc_mean_A": 1.04,
+      "gpc_sd_A": 0.0,
+      "replications": 2
+    },
+    {
+      "temperature_C": 275,
+      "flow_sccm": 20,
+      "pulse_ms": 20,
+      "purge_s": 20,
+      "gpc_mean_A": 0.95,
+      "gpc_sd_A": 0.0,
+      "replications": 2
+    },
+    {
+      "temperature_C": 275,
+      "flow_sccm": 20,
+      "pulse_ms": 40,
+      "purge_s": 10,
+      "gpc_mean_A": 1.1,
+      "gpc_sd_A": 0.0,
+      "replications": 2
+    },
+    {
+      "temperature_C": 275,
+      "flow_sccm": 20,
+      "pulse_ms": 40,
+      "purge_s": 20,
+      "gpc_mean_A": 1.01,
+      "gpc_sd_A": 0.01414,
+      "replications": 2
+    }
+  ],
+  "engineering_cases": [
+    {
+      "case_id": "C01",
+      "scenario": "GPC 최우선",
+      "request": {
+        "target_nm": 10,
+        "objective": "gpc"
+      },
+      "feasible_candidates": 16,
+      "v0_pass": true,
+      "v1_pass": true,
+      "v1_action": "후보 검토",
+      "diagnosis": "v0/v1 모두 독립 참조 후보와 일치 (막 특성 승인 아님)"
+    },
+    {
+      "case_id": "C02",
+      "scenario": "GPC 최우선 · 200°C 이하",
+      "request": {
+        "target_nm": 10,
+        "max_temp": 200,
+        "objective": "gpc"
+      },
+      "feasible_candidates": 8,
+      "v0_pass": true,
+      "v1_pass": true,
+      "v1_action": "후보 검토",
+      "diagnosis": "v0/v1 모두 독립 참조 후보와 일치 (막 특성 승인 아님)"
+    },
+    {
+      "case_id": "C03",
+      "scenario": "시퀀스 최단",
+      "request": {
+        "target_nm": 10,
+        "objective": "time"
+      },
+      "feasible_candidates": 16,
+      "v0_pass": false,
+      "v1_pass": true,
+      "v1_action": "후보 검토",
+      "diagnosis": "v0는 요구 조건 또는 독립 참조의 목적별 최적 후보와 불일치"
+    },
+    {
+      "case_id": "C04",
+      "scenario": "시퀀스 최단 · 200°C 이하",
+      "request": {
+        "target_nm": 10,
+        "max_temp": 200,
+        "objective": "time"
+      },
+      "feasible_candidates": 8,
+      "v0_pass": false,
+      "v1_pass": true,
+      "v1_action": "후보 검토",
+      "diagnosis": "v0는 요구 조건 또는 독립 참조의 목적별 최적 후보와 불일치"
+    },
+    {
+      "case_id": "C05",
+      "scenario": "Ar 20 sccm 필수",
+      "request": {
+        "target_nm": 10,
+        "min_flow": 20,
+        "max_flow": 20,
+        "objective": "gpc"
+      },
+      "feasible_candidates": 8,
+      "v0_pass": false,
+      "v1_pass": true,
+      "v1_action": "후보 검토",
+      "diagnosis": "v0는 요구 조건 또는 독립 참조의 목적별 최적 후보와 불일치"
+    },
+    {
+      "case_id": "C06",
+      "scenario": "Purge 10초 이하",
+      "request": {
+        "target_nm": 10,
+        "max_purge": 10,
+        "objective": "time"
+      },
+      "feasible_candidates": 8,
+      "v0_pass": false,
+      "v1_pass": true,
+      "v1_action": "후보 검토",
+      "diagnosis": "v0는 요구 조건 또는 독립 참조의 목적별 최적 후보와 불일치"
+    },
+    {
+      "case_id": "C07",
+      "scenario": "150°C 이하",
+      "request": {
+        "target_nm": 10,
+        "max_temp": 150,
+        "objective": "time"
+      },
+      "feasible_candidates": 0,
+      "v0_pass": false,
+      "v1_pass": true,
+      "v1_action": "추천 거부",
+      "diagnosis": "실측 후보 없음 또는 입력 충돌: 추천 거부가 정답"
+    },
+    {
+      "case_id": "C08",
+      "scenario": "Purge 상·하한 충돌",
+      "request": {
+        "target_nm": 10,
+        "min_purge": 20,
+        "max_purge": 10,
+        "objective": "time"
+      },
+      "feasible_candidates": 0,
+      "v0_pass": false,
+      "v1_pass": true,
+      "v1_action": "추천 거부",
+      "diagnosis": "실측 후보 없음 또는 입력 충돌: 추천 거부가 정답"
+    }
+  ],
+  "warning": "Educational pre-screening; time excludes tool overhead; not a production claim."
+}

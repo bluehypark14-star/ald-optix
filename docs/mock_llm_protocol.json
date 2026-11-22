@@ -1,0 +1,254 @@
+{
+  "warning": "OFFLINE MOCK PROTOCOL ONLY. NO LIVE LLM API REQUEST WAS PERFORMED.",
+  "success_case": {
+    "schema_version": "1.0",
+    "audit": {
+      "mode": "Mock LLM protocol",
+      "mode_classification": "SIMULATED_LLM_PROTOCOL__NOT_LIVE",
+      "status": "ENGINEERING_REPORT_VERIFIED",
+      "validated_report": true,
+      "evidence_retrieved": true,
+      "locked_recipe_queried": true,
+      "steps": [
+        "request_validation",
+        "search_evidence",
+        "find_recipes"
+      ],
+      "study_data": "https://doi.org/10.3390/ma18091918",
+      "external_manufacturing_validation": false,
+      "live_api_independently_verified": false,
+      "trace_authenticity_independently_verified": false,
+      "trace_mode_consistent": true,
+      "trace_steps_verified": true,
+      "reason": "final_report_recomputed_from_measured_data"
+    },
+    "request": {
+      "target_nm": 10,
+      "min_purge": 20,
+      "max_temp": 200,
+      "objective": "time"
+    },
+    "trace": [
+      {
+        "tool": "request_validation",
+        "input": {
+          "target_nm": 10,
+          "min_purge": 20,
+          "max_temp": 200,
+          "objective": "time"
+        },
+        "result": {
+          "parsed": {
+            "target_nm": 10.0,
+            "min_temp": 175.0,
+            "max_temp": 200.0,
+            "min_flow": 10.0,
+            "max_flow": 20.0,
+            "min_pulse": 20.0,
+            "max_pulse": 40.0,
+            "min_purge": 20.0,
+            "max_purge": 20.0,
+            "objective": "time"
+          },
+          "locked": true,
+          "execution_origin": "INJECTED_CLIENT",
+          "api_responses_received": 2
+        }
+      },
+      {
+        "tool": "search_evidence",
+        "input": {
+          "query": "Al2O3 GPC purge DOE"
+        },
+        "result": [
+          {
+            "id": "P1",
+            "title": "실험 설계",
+            "text": "Al₂O₃ thermal ALD(TMA/H₂O) 실험. 온도 175/275 °C, Ar 10/20 sccm, 두 전구체 pulse 20/40 ms, purge 10/20 s를 조합한 2^4 DOE, 조건별 2회 반복(32회).",
+            "source": "https://doi.org/10.3390/ma18091918",
+            "type": "관측"
+          },
+          {
+            "id": "P3",
+            "title": "변수 간 상호작용",
+            "text": "해당 논문은 온도×purge, pulse×purge 상호작용을 유의하게 분석. GPC 단독 최적화와 처리량 최적화 목표는 다름.",
+            "source": "https://doi.org/10.3390/ma18091918",
+            "type": "논문 분석"
+          },
+          {
+            "id": "P2",
+            "title": "온도의 주효과",
+            "text": "해당 실험에서 온도는 통계적으로 유의한 주효과. 평균 GPC는 175°C에서 275°C보다 높았음. 다른 장비에 일반화할 수 없음.",
+            "source": "https://doi.org/10.3390/ma18091918",
+            "type": "논문 분석"
+          }
+        ]
+      },
+      {
+        "tool": "find_recipes",
+        "input": {},
+        "result": {
+          "best": {
+            "temperature_C": 175.0,
+            "flow_sccm": 10.0,
+            "pulse_ms": 40.0,
+            "purge_s": 20.0,
+            "gpc_mean_A": 1.41,
+            "gpc_sd_A": 0.014142135623730963,
+            "replications": 2.0,
+            "cycles": 71.0,
+            "sequence_time_s": 2845.68,
+            "sequence_time_min": 47.428,
+            "target_nm": 10.0
+          },
+          "n_feasible": 4,
+          "baseline_v0": {
+            "temperature_C": 175.0,
+            "flow_sccm": 10.0,
+            "pulse_ms": 40.0,
+            "purge_s": 20.0,
+            "gpc_mean_A": 1.41,
+            "gpc_sd_A": 0.014142135623730963,
+            "replications": 2.0,
+            "cycles": 71,
+            "sequence_time_s": 2845.68
+          },
+          "v0_constraint_issues": [],
+          "quality_gate": {
+            "status": "REVIEW_REQUIRED",
+            "errors": [],
+            "warnings": [
+              "원 논문의 GPC는 200회 cycle 실험 결과이며 목표 두께 환산은 선형 성장 가정에 의존합니다.",
+              "실제 cycle overhead·purge 포화도·전기 특성·막 균일도는 검증되지 않았습니다.",
+              "본 서비스의 공정 조건 제안은 양산 레시피 승인이나 자동 장비 제어가 아닙니다."
+            ],
+            "source": "https://doi.org/10.3390/ma18091918"
+          },
+          "locked_request": {
+            "target_nm": 10.0,
+            "min_temp": 175.0,
+            "max_temp": 200.0,
+            "min_flow": 10.0,
+            "max_flow": 20.0,
+            "min_pulse": 20.0,
+            "max_pulse": 40.0,
+            "min_purge": 20.0,
+            "max_purge": 20.0,
+            "objective": "time"
+          },
+          "source": "https://doi.org/10.3390/ma18091918",
+          "limitations": "Only observed DOE conditions, no film quality certification or real equipment-time data"
+        }
+      }
+    ],
+    "note": "실행 기록은 사용자가 편집할 수 있는 JSON으로 독립적인 API 호출 증명이 아닙니다. 모의 LLM은 실제 API 호출 증거가 아닙니다. REVIEW_REQUIRED는 실험/양산 공정 승인 상태가 아닙니다."
+  },
+  "blocked_constraint_attack": {
+    "schema_version": "1.0",
+    "audit": {
+      "mode": "Mock LLM protocol",
+      "mode_classification": "SIMULATED_LLM_PROTOCOL__NOT_LIVE",
+      "status": "BLOCKED_OR_INCOMPLETE",
+      "validated_report": false,
+      "evidence_retrieved": true,
+      "locked_recipe_queried": false,
+      "steps": [
+        "request_validation",
+        "search_evidence",
+        "find_recipes"
+      ],
+      "study_data": "https://doi.org/10.3390/ma18091918",
+      "external_manufacturing_validation": false,
+      "live_api_independently_verified": false,
+      "trace_authenticity_independently_verified": false,
+      "trace_mode_consistent": true,
+      "trace_steps_verified": true,
+      "reason": "missing_evidence_or_recipe"
+    },
+    "request": {
+      "target_nm": 10,
+      "min_purge": 20,
+      "max_temp": 200,
+      "objective": "time"
+    },
+    "trace": [
+      {
+        "tool": "request_validation",
+        "input": {
+          "target_nm": 10,
+          "min_purge": 20,
+          "max_temp": 200,
+          "objective": "time"
+        },
+        "result": {
+          "parsed": {
+            "target_nm": 10.0,
+            "min_temp": 175.0,
+            "max_temp": 200.0,
+            "min_flow": 10.0,
+            "max_flow": 20.0,
+            "min_pulse": 20.0,
+            "max_pulse": 40.0,
+            "min_purge": 20.0,
+            "max_purge": 20.0,
+            "objective": "time"
+          },
+          "locked": true,
+          "execution_origin": "INJECTED_CLIENT",
+          "api_responses_received": 2
+        }
+      },
+      {
+        "tool": "search_evidence",
+        "input": {
+          "query": "Al2O3 GPC purge DOE"
+        },
+        "result": [
+          {
+            "id": "P1",
+            "title": "실험 설계",
+            "text": "Al₂O₃ thermal ALD(TMA/H₂O) 실험. 온도 175/275 °C, Ar 10/20 sccm, 두 전구체 pulse 20/40 ms, purge 10/20 s를 조합한 2^4 DOE, 조건별 2회 반복(32회).",
+            "source": "https://doi.org/10.3390/ma18091918",
+            "type": "관측"
+          },
+          {
+            "id": "P3",
+            "title": "변수 간 상호작용",
+            "text": "해당 논문은 온도×purge, pulse×purge 상호작용을 유의하게 분석. GPC 단독 최적화와 처리량 최적화 목표는 다름.",
+            "source": "https://doi.org/10.3390/ma18091918",
+            "type": "논문 분석"
+          },
+          {
+            "id": "P2",
+            "title": "온도의 주효과",
+            "text": "해당 실험에서 온도는 통계적으로 유의한 주효과. 평균 GPC는 175°C에서 275°C보다 높았음. 다른 장비에 일반화할 수 없음.",
+            "source": "https://doi.org/10.3390/ma18091918",
+            "type": "논문 분석"
+          }
+        ]
+      },
+      {
+        "tool": "find_recipes",
+        "input": {
+          "min_purge": 10
+        },
+        "result": {
+          "error": "LLM 도구 인자 min_purge가 사용자 원문에서 확정한 값과 다릅니다. 요청 제약 완화 거부.",
+          "original_request": {
+            "target_nm": 10.0,
+            "min_temp": 175.0,
+            "max_temp": 200.0,
+            "min_flow": 10.0,
+            "max_flow": 20.0,
+            "min_pulse": 20.0,
+            "max_pulse": 40.0,
+            "min_purge": 20.0,
+            "max_purge": 20.0,
+            "objective": "time"
+          }
+        }
+      }
+    ],
+    "note": "실행 기록은 사용자가 편집할 수 있는 JSON으로 독립적인 API 호출 증명이 아닙니다. 모의 LLM은 실제 API 호출 증거가 아닙니다. REVIEW_REQUIRED는 실험/양산 공정 승인 상태가 아닙니다."
+  }
+}
